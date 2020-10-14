@@ -6,6 +6,7 @@ import {InstanceCommandBase} from '../command-base'
 import {InstanceStatus} from '../instance-info'
 
 export default class StartCommand extends InstanceCommandBase {
+  static allowWithAll = true
   static description = 'stop a server instance'
 
   static examples = [
@@ -25,7 +26,7 @@ export default class StartCommand extends InstanceCommandBase {
       this.warn(`instance: ${this.instanceName} is not running`)
       return
     }
-    const command = `${config['mc-service']} stop ${this.instanceName}`
+    const command = `${config.mcService} stop ${this.instanceName}`
     const result = shell.exec(command, {silent: true})
     this.info(`instance: ${this.instanceName} stopped`)
   }

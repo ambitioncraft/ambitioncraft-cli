@@ -11,7 +11,6 @@ export default class CommandResponse extends EventEmitter  {
   logs: log[] = []
   hasWarning = false
   hasError = false
-  isEmbed = true
   setTitle(title: any): CommandResponse {
     this.title = title
     return this

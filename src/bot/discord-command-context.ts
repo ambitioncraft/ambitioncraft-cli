@@ -4,19 +4,21 @@ import Discord, {MessageEmbed} from 'discord.js'
 import CommandResponse, {Colors, loglevel} from '../command-response'
 import throttle from '../utils/throttle'
 import {Config, IConfig} from '@oclif/config/lib/config'
+import config from '../config'
 
 const logLevelIcon: Record<loglevel, string> = {
   info: '',
-  success: '🟢',
-  warn: '🟠',
-  danger: '🔴',
-  error: '🔴',
+  success: '🟢 ',
+  warn: '🟠 ',
+  danger: '🔴 ',
+  error: '🔴 ',
 }
 
 export default class DiscordCommandContext extends CommandContext {
   replyMessage?: Discord.Message
+  commandPrefix = config.discord.commandPrefix
   constructor(public sourceMessage: Discord.Message, args: string[], user?: user) {
-    super(args, user)
+    super(sourceMessage, args, user)
     const throttleLog = throttle(() => this.onLog(), 500)
     this.commandResponse.on('log', () => throttleLog())
     this.commandResponse.on('flush', () => throttleLog.flush().then(() => this.onLog()))
@@ -24,23 +26,27 @@ export default class DiscordCommandContext extends CommandContext {
 
   async executeCommand(cmdConfig: Config | IConfig) {
     const commandText = this.args.join(' ')
-    this.replyMessage = await this.sourceMessage.channel.send(codeBlock(`running command:${commandText}`))
+    this.commandResponse
+    .setTitle(`**${this.args[0]}** ${[...this.args].splice(1).join(' ')}`)
+
+    const embed = new Discord.MessageEmbed()
+    .setTitle(this.commandResponse.title)
+    .setDescription(codeBlock(`running command:${commandText}`))
+
+    this.replyMessage = await this.sourceMessage.reply(embed)
     await super.executeCommand(cmdConfig)
   }
 
+  createChildContext(args: string[]) {
+    return new DiscordCommandContext(this.client, args, this.user)
+  }
+
   async onLog() {
-    let content
-    if (this.commandResponse.isEmbed) {
-      content = createEmbed(this.commandResponse)
-    } else {
-      content = codeBlock(
-        this.commandResponse.logs.map(x => `${logLevelIcon[x.level]} ${x.message}`).join('\n')
-      )
-    }
+    const content = createEmbed(this.commandResponse)
     if (this.replyMessage) {
       await this.replyMessage.edit(content)
     } else {
-      this.replyMessage = await this.sourceMessage.channel.send(content)
+      this.replyMessage = await this.sourceMessage.reply(content)
     }
     console.log('done')
   }
@@ -69,7 +75,9 @@ function createEmbed(commandResponse: CommandResponse) {
   if (res.description) {
     embed.setDescription(res.description)
   } else if (res.logs.length > 0) {
-    embed.setDescription(codeBlock(res.logs.map(x => x.message).join('\n')))
+    embed.setDescription(codeBlock(
+      res.logs.map(x => `${logLevelIcon[x.level]}${x.message}`).join('\n')
+    ))
   }
   res.fields.forEach(f => {
     embed.addField(f.name, f.value, f.inline)

@@ -1,5 +1,6 @@
 /* eslint-disable valid-jsdoc */
 import Command, {flags} from '@oclif/command'
+import {option} from '@oclif/command/lib/flags'
 import {PrettyPrintableError} from '@oclif/errors'
 import * as Parser from '@oclif/parser'
 import CommandContext from './command-context'
@@ -28,7 +29,7 @@ export default abstract class McCommand extends Command {
 
   constructor(argv: string[], config: any) {
     super(argv, config)
-    this.context  = config.run_context || new CommandContext(argv)
+    this.context  = config.run_context || new CommandContext(null, argv)
   }
 
   async init() {
@@ -67,7 +68,9 @@ export default abstract class McCommand extends Command {
   error(input: string | Error, options: { code?: string; exit: false } & PrettyPrintableError): void
   error(input: string | Error, options?: { code?: string; exit?: number } & PrettyPrintableError): never
   error(input: string | Error, options: { code?: string; exit?: number | false } & PrettyPrintableError = {}) {
-    this.response.error(input as string)
+    if (options.exit === false) {
+      this.response.error(input as string)
+    }
     super.error(input, options as any)
   }
 
@@ -97,7 +100,8 @@ export default abstract class McCommand extends Command {
 
 export abstract class InstanceCommandBase extends McCommand {
   instanceName: any
-
+  /** Allow this method to run with the instance --all command */
+  static allowWithAll = false // do not change this here, change this on the child class
   static instanceArg = {name: 'instanceName', required: true, description: 'Name of the server instance'}
 
   static args: Parser.args.IArg<any>[] = [InstanceCommandBase.instanceArg]

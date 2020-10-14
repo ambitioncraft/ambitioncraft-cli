@@ -7,6 +7,7 @@ import McCommand, {InstanceCommandBase} from '../command-base'
 import {InstanceInfo, InstanceStatus} from '../instance-info'
 
 export default class ScoreboardCommand extends InstanceCommandBase {
+  static allowWithAll = true
   static aliases = ['sb']
   static description = 'displays the scoreboard associated to a specific objective'
 

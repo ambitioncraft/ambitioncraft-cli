@@ -1,10 +1,10 @@
 import {string} from '@oclif/command/lib/flags'
 import {Rcon} from 'rcon-client'
-import {config} from 'shelljs'
 import {InstanceInfo} from './instance-info'
-
+import config from './config.json'
+import fs from 'fs'
 export class Store {
-  instances: Record<string, InstanceInfo> = {}
+  private instances: Record<string, InstanceInfo> = {}
   getInstanceInfo(instanceName: string) {
     if (!this.instances[instanceName]) {
       const instance = InstanceInfo.findInstance(instanceName)
@@ -14,6 +14,13 @@ export class Store {
       this.instances[instanceName] = instance
     }
     return this.instances[instanceName]
+  }
+
+  getAllInstances(): InstanceInfo[] {
+    return fs.readdirSync(config.directories.instances, {withFileTypes: true})
+    .filter(dir => dir.isDirectory())
+    .map(dir => this.getInstanceInfo(dir.name))
+    .filter(x => x) as InstanceInfo[]
   }
 }
 const store = new Store()

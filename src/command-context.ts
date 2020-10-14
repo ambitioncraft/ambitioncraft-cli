@@ -1,12 +1,13 @@
 import CommandResponse from './command-response'
 import {run} from '@oclif/command'
 import {Config, IConfig, load} from '@oclif/config'
-export type user = { name: string; roles: string[] }
+export type user = { name: string }
+
 export default class CommandContext {
     // eslint-disable-next-line no-useless-constructor
     commandResponse: CommandResponse
-
-    constructor(public readonly args: string[], public user?: user) {
+    commandPrefix = '$ mcd '
+    constructor(public client: any, public readonly args: string[], public user?: user) {
       this.commandResponse = new CommandResponse()
     }
 
@@ -18,9 +19,14 @@ export default class CommandContext {
       } catch (error) {
         if (error.oclif?.exit !== 0) {
           this.commandResponse.error(error.message)
+          console.log(error.message)
         }
       }
       await this.commandResponse.flush()
+    }
+
+    createChildContext(args: string[]) {
+      return new CommandContext(this.client, args, this.user)
     }
 }
 

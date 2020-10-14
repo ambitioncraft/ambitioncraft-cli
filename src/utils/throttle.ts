@@ -91,18 +91,3 @@ export default function throttle(
 }
 
 throttle.CanceledError = CanceledError
-
-// module.exports = ((throttle: any): {
-//   <Args: Array<any>, Value>(
-//     fn: (...args: Args) => Promise<Value>,
-//     wait: ?number,
-//     options?: {
-//       getNextArgs?: (args0: Args, args1: Args) => Args,
-//     }
-//   ): {
-//     (...args: Args): Promise<Value>,
-//     cancel: () => Promise<void>,
-//     flush: () => Promise<void>,
-//   },
-//   CanceledError: typeof CanceledError,
-// })

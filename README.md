@@ -30,9 +30,11 @@ USAGE
 <!-- commands -->
 * [`mc execute INSTANCENAME MCCOMMAND`](#mc-execute-instancename-mccommand)
 * [`mc help [COMMAND]`](#mc-help-command)
+* [`mc instance COMMAND`](#mc-instance-command)
 * [`mc list INSTANCENAME`](#mc-list-instancename)
 * [`mc make-server NAME`](#mc-make-server-name)
 * [`mc make-world INSTANCENAME WORLDNAME`](#mc-make-world-instancename-worldname)
+* [`mc mcprop INSTANCENAME`](#mc-mcprop-instancename)
 * [`mc mspt INSTANCENAME`](#mc-mspt-instancename)
 * [`mc scoreboard INSTANCENAME OBJECTIVE`](#mc-scoreboard-instancename-objective)
 * [`mc start INSTANCENAME`](#mc-start-instancename)
@@ -82,6 +84,31 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
 
+## `mc instance COMMAND`
+
+Execute a command across one or more instances
+
+```
+USAGE
+  $ mc instance COMMAND
+
+ARGUMENTS
+  COMMAND  command to execute
+
+OPTIONS
+  -a, --all                execute command for all instances
+  -i, --instance=instance  instance to use
+
+ALIASES
+  $ mc i
+
+EXAMPLES
+  $ mc instance mspt --all
+  $ mc i status -i=uhc -i=uhc2
+```
+
+_See code: [src/commands/instance.ts](https://github.com/MatthewOverall/mc-cli/blob/v0.0.0/src/commands/instance.ts)_
+
 ## `mc list INSTANCENAME`
 
 list all players on a server
@@ -114,13 +141,16 @@ ARGUMENTS
   NAME  Name of the server instance. Must be lowercase and contain only letters, numbers, underscore, and hypens.
 
 OPTIONS
-  -h, --help                                              display command help
-  -v, --version=1.14.4|1.15.2|1.16.2|1.16.3|paper_1.16.3  (required) Minecraft Image Version
+  -h, --help         display command help
+  -i, --image=image  (required) Minecraft Image Name (1.16.1, paper_1.16.3, ...)
+
+ALIASES
+  $ mc mkserver
 
 EXAMPLES
   $ mc make-server
   $ mc make-server uhc
-  $ mc make-server uhc --version=1.16.2
+  $ mc mkserver uhc --image=1.16.2
 ```
 
 _See code: [src/commands/make-server.ts](https://github.com/MatthewOverall/mc-cli/blob/v0.0.0/src/commands/make-server.ts)_
@@ -143,14 +173,37 @@ OPTIONS
   -s, --seed=seed  seed of new world
   -t, --temp       helper to indicate this world is only temporary
 
+ALIASES
+  $ mc mkworld
+
 EXAMPLES
   $ mc make-world uhc MyWorld --seed=19094829123
   $ mc make-world speedrun setseedworld --temp
   $ mc make-world speedrun setseedworld --temp --remake
-  $ mc make-world speedrun setseedworld -tr
+  $ mc mkworld speedrun setseedworld -tr
 ```
 
 _See code: [src/commands/make-world.ts](https://github.com/MatthewOverall/mc-cli/blob/v0.0.0/src/commands/make-world.ts)_
+
+## `mc mcprop INSTANCENAME`
+
+change a setting in minecraft.properties
+
+```
+USAGE
+  $ mc mcprop INSTANCENAME
+
+ARGUMENTS
+  INSTANCENAME  Name of the server instance
+
+OPTIONS
+  -h, --help  display command help
+
+EXAMPLE
+  $ mc mcprop uhc level-name="my world"
+```
+
+_See code: [src/commands/mcprop.ts](https://github.com/MatthewOverall/mc-cli/blob/v0.0.0/src/commands/mcprop.ts)_
 
 ## `mc mspt INSTANCENAME`
 

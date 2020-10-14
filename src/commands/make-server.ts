@@ -7,40 +7,43 @@ import Path from 'path'
 import * as inquirer from 'inquirer'
 import config from '../config.json'
 import McCommand from '../command-base'
+import {makeWorld, MakeWorldCommand} from './make-world'
+import {InstanceInfo} from '../instance-info'
 
-const versions = fs.readdirSync('/opt/minecraft/images/').filter(x => x !== 'common')
+const images = fs.readdirSync(config.directories.images).filter(x => x !== 'common')
 export class MakeServerCommand extends McCommand {
   static description = 'Create a new Minecraft server instance.'
-
+  static aliases = ['mkserver']
   static examples = [
     '$ mc make-server',
     '$ mc make-server uhc',
-    '$ mc make-server uhc --version=1.16.2',
+    '$ mc mkserver uhc --image=1.16.2',
   ]
 
   static flags: flags.Input<any> = {
     ...McCommand.flags,
-    version: flags.string({char: 'v', required: true, options: versions, description: 'Minecraft Image Version'}),
+    image: flags.string({char: 'i', required: true, description: 'Minecraft Image Name (1.16.1, paper_1.16.3, ...)'}),
   }
 
   static args: Parser.args.IArg<any>[] = [
     {name: 'name', required: true, description: 'Name of the server instance. Must be lowercase and contain only letters, numbers, underscore, and hypens.'},
   ]
 
+  // eslint-disable-next-line require-await
   async run() {
     const {args} = this.parse(MakeServerCommand)
 
-    const version: string = this.flags.version
-    let name: string = args.name
+    const image: string = this.flags.image
+    const name: string = args.name
 
-    const questions: inquirer.QuestionCollection<any>[] = []
-    if (!name) {
-      const reply = await inquirer.prompt({
-        name: 'name',
-        message: 'Server name without spaces',
-      })
-      name = reply.name
-    }
+    // const questions: inquirer.QuestionCollection<any>[] = []
+    // if (!name) {
+    //   const reply = await inquirer.prompt({
+    //     name: 'name',
+    //     message: 'Server name without spaces',
+    //   })
+    //   name = reply.name
+    // }
 
     if (name.match(/[^a-z0-9\-_]/)) {
       this.error(
@@ -49,36 +52,36 @@ export class MakeServerCommand extends McCommand {
       `.trimIndent())
     }
 
-    // if (!versions.includes(version)) {
+    // if (!images.includes(image)) {
     //   const reply = await inquirer.prompt({
-    //     name: 'version',
-    //     message: 'select a version',
+    //     name: 'image',
+    //     message: 'select an image',
     //     type: 'list',
-    //     choices: versions.map(v => ({name: v})),
+    //     choices: images.map(v => ({name: v})),
     //   })
-    //   version = reply.version
+    //   image = reply.image
     // }
 
-    if (!versions.includes(version)) {
-      this.error(`Invalid version selected: ${version}`)
+    if (!images.includes(image)) {
+      this.error(`Invalid image selected: ${image}`)
     }
 
-    await this.createServer(name, version)
+    createServer(name, image, this)
+    makeWorld(name, {worldName: 'world'}, this)
+  }
+}
+
+function createServer(name: string, image: string, cmd: McCommand) {
+  const instancePath = Path.join(config.directories.instances, name)
+  const imagePath = Path.join(config.directories.images, image)
+  const commonPath = Path.join(config.directories.images, 'common')
+  // ensure server doesn't already exist
+  if (fs.existsSync(instancePath)) {
+    cmd.error(`server ${name} already exists.`)
   }
 
-  // eslint-disable-next-line require-await
-  async createServer(name: string, version: string) {
-    const instancePath = Path.join(config.directories.instances, name)
-    const imagePath = Path.join(config.directories.images, version)
-    const commonPath = Path.join(config.directories.images, 'common')
-    // ensure server doesn't already exist
-    if (fs.existsSync(instancePath)) {
-      this.error(`server ${name} already exists.`)
-    }
-
-    this.console('copying server files...')
-    shell.cp('-r', imagePath, instancePath)
-    shell.cp('-r', Path.join(commonPath, '/*'), instancePath)
-    this.info(`Server:${name} created using the ${version} image.`)
-  }
+  cmd.console('copying server files...')
+  shell.cp('-r', imagePath, instancePath)
+  shell.cp('-r', Path.join(commonPath, '/*'), instancePath)
+  cmd.info(`Server:${name} created using the ${image} image.`)
 }

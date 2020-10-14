@@ -4,8 +4,9 @@ import shell from 'shelljs'
 import config from '../config.json'
 import {InstanceCommandBase} from '../command-base'
 import {InstanceStatus} from '../instance-info'
-
+import retry from 'async-retry'
 export default class StartCommand extends InstanceCommandBase {
+  static allowWithAll = false
   static description = 'start a server instance'
 
   static examples = [
@@ -30,17 +31,26 @@ export default class StartCommand extends InstanceCommandBase {
       return
     }
 
-    const command = `${config['mc-service']} start ${this.instanceName}`
+    const command = `${config.mcService} start ${this.instanceName}`
     const result = shell.exec(command, {silent: true})
     this.info(`instance: ${this.instanceName} is starting`)
+    try {
+      const isReady = await retry(async abort => {
+        await this.instance.sendRconCommand('say ping')
+        return true
+      }, {
+        maxRetryTime: 60000,
+        minTimeout: 2000,
+        maxTimeout: 5000,
+        onRetry: (e, i) => {
+          this.console(`attempting to connect... attempt: ${i}`)
+        },
+      })
+      if (isReady) {
+        this.success('server is online')
+      }
+    } catch {
+      this.danger('timeout: server did not respond')
+    }
   }
-
-  // async isOnline() {
-  //   try {
-  //     const response = await this.instance.sendRconCommand('say hello')
-  //     if(response)
-  //   } catch {
-  //     return
-  //   }
-  // }
 }

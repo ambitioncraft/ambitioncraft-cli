@@ -6,9 +6,14 @@ export function readMinecraftServerProperties(path: string): MinecraftProperties
   const props = {} as MinecraftProperties
   const text = fs.readFileSync(path, 'utf8')
   text.split(/\r?\n/).forEach(l => {
+    if (l.trim().startsWith('#')) {
+      return
+    }
     const k = l.substring(0, l.indexOf('='))
     const v = l.substring(l.indexOf('=') + 1)
-    props[k] = v
+    if (k.length > 1) {
+      props[k] = v
+    }
   })
   return props
 }

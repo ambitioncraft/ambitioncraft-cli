@@ -2,16 +2,18 @@ import Discord, {Message, MessageEmbed} from 'discord.js'
 import {Config, IConfig, load} from '@oclif/config'
 import McCommand, {InstanceCommandBase} from '../command-base'
 import {Command} from '@oclif/config/lib/command'
-import config from '../config.json'
 import {Help} from '@oclif/plugin-help'
 import {run} from '@oclif/command'
 import CommandContext from '../command-context'
 import CommandResponse, {Colors, loglevel} from '../command-response'
 import {debug} from 'console'
 import DiscordCommandContext from './discord-command-context'
+import config from '../config'
+import {cp} from 'shelljs'
 
 export default class DiscordBot extends Discord.Client {
-  channelsMap: { [index: string]: string } = {}
+  channelsMap = {} as { [key: string]: string }
+
   commands: { [index: string]: Command.Plugin } = {}
   cmdConfig!: Config | IConfig
 
@@ -33,7 +35,7 @@ export default class DiscordBot extends Discord.Client {
   }
 
   async onMessageReceived(message: Discord.Message) {
-    const prefix = config.discord.prefix
+    const prefix = config.discord.commandPrefix
 
     if (message.author.bot) {
       return
@@ -45,31 +47,38 @@ export default class DiscordBot extends Discord.Client {
       return
     }
 
-    const instanceId = this.channelsMap[message.channel.id]
+    const instance = this.channelsMap[message.channel.id]
 
     const args = lineToArgs(message.content.substring(prefix.length).trim())
-    const command = args[0]
-    console.log('command', command, args)
-    if (!this.commands[command]) {
+    const commandToRun = this.cmdConfig.findCommand(args[0], {must: false})
+
+    if (!commandToRun) {
       // not a valid discord command
       console.log('not a valid discord command')
+      message.reply(`\`${args[0]}\` is not a valid discord command`)
+      return
+    }
+    const roles = message.member?.roles.cache.map(x => x.name) || []
+
+    if (!hasCommandAccess(roles, commandToRun.id)) {
+      console.log('no access to command')
+      message.reply(`You do not have access to the \`${commandToRun.id}\` command`)
       return
     }
 
-    if (instanceId.includes('*')) {
+    if (instance === '*') {
       // from the global channel
       console.log('from a main channel')
     } else {
       // from an instance channel
       console.log('from bridge channel')
     }
-    const commandToRun = this.commands[args[0]]
+
     if (commandToRun.args.some(a => a === InstanceCommandBase.instanceArg)) {
       // make sure we get the instance name from discord mapping...
     }
     const user = {
       name: message.member?.user.username || '',
-      roles: message.member?.roles.cache.map(x => x.name) || [],
     }
 
     const context = new DiscordCommandContext(
@@ -79,6 +88,14 @@ export default class DiscordBot extends Discord.Client {
     )
     await context.executeCommand(this.cmdConfig)
   }
+}
+
+function hasCommandAccess(roles: string[], commandId: string): boolean {
+  roles = ['*', ...roles]
+  return roles.some(role => {
+    const cmdList = config.discord.roles[role]?.commands || []
+    return cmdList.includes('*') || cmdList.includes(commandId)
+  })
 }
 
 function lineToArgs(line: any) {
@@ -93,16 +110,4 @@ function lineToArgs(line: any) {
     return p
   }, {a: ['']}).a
   return arr.filter(x => x !== '')
-}
-
-function createErrorEmbed(error: string) {
-  const embed = new MessageEmbed()
-  .setColor('DARK_RED')
-  .setDescription(error)
-
-  return embed
-}
-
-function codeBlock(text: string, language = '') {
-  return '```' + language + '\n' + text + '\n```'
 }

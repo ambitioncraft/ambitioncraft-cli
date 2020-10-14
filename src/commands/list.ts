@@ -7,6 +7,7 @@ import {InstanceCommandBase} from '../command-base'
 import {InstanceInfo, InstanceStatus} from '../instance-info'
 
 export default class ListCommand extends InstanceCommandBase {
+  static allowWithAll = true
   static description = 'list all players on a server'
 
   static examples = [

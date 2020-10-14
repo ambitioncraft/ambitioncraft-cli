@@ -4,7 +4,6 @@ import {Rcon} from 'rcon-client'
 import shelljs from 'shelljs'
 import fs from 'fs'
 import * as utils from './utils/instance-utils'
-import {notDeepEqual} from 'assert'
 
 type InstanceSettings = {
   name: string;
@@ -57,6 +56,14 @@ export class InstanceInfo {
     return new InstanceInfo(settings)
   }
 
+  getMinecraftProperties() {
+    return utils.readMinecraftServerProperties(Path.join(this.path, 'server.properties'))
+  }
+
+  setMinecraftProperties(props: utils.MinecraftProperties) {
+    utils.writeMinecraftServerProperties(Path.join(this.path, 'server.properties'), props)
+  }
+
   private async getRcon() {
     if (this.rcon && this.rcon.authenticated) {
       return this.rcon
@@ -98,11 +105,12 @@ export class InstanceInfo {
     // await call to host
     // return true or false if can ping or not
     // No need to retry here, the thing calling this method will be responsible for retrying.
+    await Promise.resolve()
     throw new Error('Not Implemented')
   }
 
   static getServiceStatus(instanceName: string): InstanceStatus {
-    const command = `${config['mc-service']} is-active ${instanceName}`
+    const command = `${config.mcService} is-active ${instanceName}`
     const result = shelljs.exec(command, {silent: true}).trim()
     if (result === 'active') {
       return InstanceStatus.Active

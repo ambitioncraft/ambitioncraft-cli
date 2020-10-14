@@ -3,18 +3,20 @@ import * as Config from '@oclif/config'
 import stripAnsi = require('strip-ansi')
 import CommandContext from './command-context'
 export default class CustomHelp extends Help {
-  context: CommandContext
+  context: CommandContext | undefined
   constructor(config: Config.IConfig, opts?: Partial<HelpOptions> | undefined) {
     super(config, opts)
     this.opts.stripAnsi = true
     this.opts.all = true
     this.context = (config as any).run_context
+    this.context?.commandResponse.setColorCustom('0x7ff1e9')
   }
 
   log(message: string) {
-    this.context.commandResponse.info(message.trim())
-    this.context.commandResponse.setColorCustom('0x7ff1e9')
-    this.context.commandResponse.setTitle('**Main Help**')
+    if (this.context?.commandPrefix) {
+      message = message.replace(/\$ mc /gm, this.context.commandPrefix)
+    }
+    this.context?.commandResponse.info(message.trim())
     console.log(message)
   }
 
@@ -42,6 +44,7 @@ export default class CustomHelp extends Help {
   }
 
   protected showRootHelp() {
+    this.context?.commandResponse.setTitle('**Main Help**')
     let rootTopics = this.sortedTopics
     let rootCommands = this.sortedCommands
 
@@ -92,7 +95,7 @@ export default class CustomHelp extends Help {
   }
 
   protected formatRoot() {
-    const root =  super.formatRoot()
+    const root = super.formatRoot()
     // strip root and version, no need for it.
     // add our own custom header.
     return root.substring(root.indexOf('USAGE')).trim()

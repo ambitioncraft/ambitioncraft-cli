@@ -6,6 +6,7 @@ import flush from '@oclif/command/flush'
 import DiscordBot from './bot/discord-bot'
 import CommandContext from './command-context'
 import DiscordCommandContext from './bot/discord-command-context'
+import store from './store'
 
 const rl = readline.createInterface(process.stdin, process.stdout)
 

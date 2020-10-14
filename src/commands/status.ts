@@ -7,6 +7,7 @@ import {InstanceCommandBase} from '../command-base'
 import {InstanceStatus} from '../instance-info'
 
 export default class StatusCommand extends InstanceCommandBase {
+  static allowWithAll = true
   static description = 'see the status of a server instance'
 
   static examples = [
@@ -17,11 +18,12 @@ export default class StatusCommand extends InstanceCommandBase {
     ...InstanceCommandBase.args,
   ]
 
-  static flags: flags.Input<any> = {...InstanceCommandBase.flags}
+  static flags: flags.Input<any> = {
+    ...InstanceCommandBase.flags,
+  }
 
   // eslint-disable-next-line require-await
   async run() {
-    this.response.isEmbed = false
     const status = this.instance.getServiceStatus()
     if (status === InstanceStatus.Active) {
       this.success('Service: online')

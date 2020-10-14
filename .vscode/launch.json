@@ -9,8 +9,9 @@
       //   "help"
       // ],
       "args": [
-        "status",
-        "test",
+        "mcprop",
+        "uhc",
+        "allow-flight=true"
       ],
       // "args": [
       //   "execute",

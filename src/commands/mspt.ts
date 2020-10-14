@@ -6,6 +6,7 @@ import {Colors} from '../command-response'
 import {InstanceInfo, InstanceStatus} from '../instance-info'
 
 export default class MsptCommand extends InstanceCommandBase {
+  static allowWithAll = true
   static description = 'get the mspt of a server'
   static alias = ['tps']
   static examples = [
@@ -16,20 +17,17 @@ export default class MsptCommand extends InstanceCommandBase {
   static args: Parser.args.IArg<any>[] = [...InstanceCommandBase.args]
 
   async run() {
+    // this.context.commandResponse.isEmbed = false
     const {tps, mspt} = await queryMSPT(this.instance)
+    const text = `TPS: ${tps.toFixed(1)} MSPT: ${mspt.toFixed(1)}`
 
-    let color: Colors = Colors.ORANGE
     if (mspt >= 50) {
-      color = Colors.RED
+      this.danger(text)
     } else if (mspt <= 25) {
-      color = Colors.GREEN
+      this.success(text)
+    } else {
+      this.warn(text)
     }
-
-    this.response
-    .setColor(color)
-    .setTitle(`TPS: ${tps.toFixed(1)} MSPT: ${mspt.toFixed(1)}`)
-
-    this.console(this.response.toConsoleFormat())
   }
 }
 
