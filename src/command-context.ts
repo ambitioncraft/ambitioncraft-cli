@@ -6,7 +6,7 @@ export type user = { name: string }
 export default class CommandContext {
     // eslint-disable-next-line no-useless-constructor
     commandResponse: CommandResponse
-    commandPrefix = '$ mcd '
+    commandPrefix: string | undefined
     constructor(public client: any, public readonly args: string[], public user?: user) {
       this.commandResponse = new CommandResponse()
     }
@@ -19,6 +19,7 @@ export default class CommandContext {
       } catch (error) {
         if (error.oclif?.exit !== 0) {
           this.commandResponse.error(error.message)
+          // eslint-disable-next-line no-console
           console.log(error.message)
         }
       }

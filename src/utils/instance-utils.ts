@@ -1,7 +1,5 @@
 import fs from 'fs'
-import Path from 'path'
-import config from '../config.json'
-import shelljs from 'shelljs'
+
 export function readMinecraftServerProperties(path: string): MinecraftProperties {
   const props = {} as MinecraftProperties
   const text = fs.readFileSync(path, 'utf8')

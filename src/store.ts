@@ -1,5 +1,3 @@
-import {string} from '@oclif/command/lib/flags'
-import {Rcon} from 'rcon-client'
 import {InstanceInfo} from './instance-info'
 import config from './config.json'
 import fs from 'fs'

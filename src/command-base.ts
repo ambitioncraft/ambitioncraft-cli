@@ -1,6 +1,5 @@
 /* eslint-disable valid-jsdoc */
 import Command, {flags} from '@oclif/command'
-import {option} from '@oclif/command/lib/flags'
 import {PrettyPrintableError} from '@oclif/errors'
 import * as Parser from '@oclif/parser'
 import CommandContext from './command-context'

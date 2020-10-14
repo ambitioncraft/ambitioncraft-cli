@@ -1,39 +1,44 @@
+/* eslint-disable no-console */
 
 import './utils/helpers'
 import {run} from '@oclif/command'
 import readline from 'readline'
-import flush from '@oclif/command/flush'
-import DiscordBot from './bot/discord-bot'
 import CommandContext from './command-context'
-import DiscordCommandContext from './bot/discord-command-context'
-import store from './store'
+import * as oclif from '@oclif/config'
 
-const rl = readline.createInterface(process.stdin, process.stdout)
+async function start() {
+  const rl = readline.createInterface(process.stdin, process.stdout)
+  const commandConfig = await oclif.load(__dirname)
 
-const bot = new DiscordBot()
-bot.start()
-
-rl.on('line', async function (line: string) {
-  try {
-    if (line.startsWith('.')) {
-      const args = lineToArgs(line.substr(1))
-      await run(lineToArgs(line.substr(1)))
-    } else if (line.startsWith('mc ')) {
-      await run(lineToArgs(line.substr(3)))
-    } else {
-      return
+  rl.on('line', async function (line: string) {
+    try {
+      if (line.startsWith('.')) {
+        const args = lineToArgs(line.substr(1))
+        const context = new CommandContext(null, args)
+        await context.executeCommand(commandConfig)
+      } else if (line.startsWith('mc ')) {
+        await run(lineToArgs(line.substr(3)))
+      } else {
+        return
+      }
+    } catch (error) {
+      if (error.oclif && error.oclif.exit !== 0) {
+        console.error(error.message)
+        console.debug(error)
+      } else {
+        console.log(error)
+      }
     }
-  } catch (error) {
-    if (error.oclif && error.oclif.exit !== 0) {
-      console.error(error.message)
-      console.debug(error)
-    } else {
-      console.log(error)
-    }
-  }
-}).on('close', () => {
-  console.log('closed')
-})
+  }).on('close', () => {
+    console.log('closed')
+  })
+
+  process.on('unhandledRejection', error => {
+    console.error('unhandledRejection', error)
+  })
+}
+
+module.exports = start()
 
 function lineToArgs(line: any) {
   const arr: string[] = line.match(/\\?.|^$/g).reduce((p: any, c: string) => {
@@ -48,8 +53,3 @@ function lineToArgs(line: any) {
   }, {a: ['']}).a
   return arr.filter(x => x !== '')
 }
-
-// process.on('unhandledRejection', error => {
-//   // Will print "unhandledRejection err is not defined"
-//   // console.log('unhandledRejection', error.message);
-// });

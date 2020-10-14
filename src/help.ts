@@ -1,6 +1,6 @@
 import {Help, HelpOptions} from '@oclif/plugin-help'
 import * as Config from '@oclif/config'
-import stripAnsi = require('strip-ansi')
+import stripAnsi from 'strip-ansi'
 import CommandContext from './command-context'
 export default class CustomHelp extends Help {
   context: CommandContext | undefined
@@ -17,6 +17,7 @@ export default class CustomHelp extends Help {
       message = message.replace(/\$ mc /gm, this.context.commandPrefix)
     }
     this.context?.commandResponse.info(message.trim())
+    // eslint-disable-next-line no-console
     console.log(message)
   }
 
