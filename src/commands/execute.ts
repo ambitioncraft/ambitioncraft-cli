@@ -4,8 +4,7 @@ import shell from 'shelljs'
 import fs, {write} from 'fs'
 import Path from 'path'
 import * as inquirer from 'inquirer'
-import config from '../config.json'
-import McCommand, {InstanceCommandBase} from '../command-base'
+import {InstanceCommandBase} from '../command-base'
 
 const invalidCommands = [
   'Incorrect argument for command',

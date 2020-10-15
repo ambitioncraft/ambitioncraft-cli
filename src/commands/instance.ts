@@ -4,8 +4,7 @@ import shell from 'shelljs'
 import fs, {write} from 'fs'
 import Path from 'path'
 import * as inquirer from 'inquirer'
-import config from '../config.json'
-import McCommand, {InstanceCommandBase} from '../command-base'
+import {McCommand, InstanceCommandBase} from '../command-base'
 import CommandContext from '../command-context'
 
 const invalidCommands = [
@@ -20,7 +19,7 @@ const invalidCommands = [
 
 export default class InstanceCommand extends McCommand {
   static aliases = ['i']
-  static description = 'Execute a command across one or more instances'
+  static description = 'Execute a command across one or more instance'
   static examples = [
     '$ mc instance mspt --all',
     '$ mc i status -i=uhc -i=uhc2',

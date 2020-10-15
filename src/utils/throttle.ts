@@ -33,7 +33,7 @@ class Delay {
   }
 }
 
-export default function throttle(
+export function throttle(
   fn: (...args: any) => Promise<any>,
   _wait: number,
   options: {

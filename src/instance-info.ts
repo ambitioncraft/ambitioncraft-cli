@@ -1,17 +1,18 @@
 import Path from 'path'
-import config from './config.json'
 import {Rcon} from 'rcon-client'
 import shelljs from 'shelljs'
 import fs from 'fs'
-import * as utils from './utils/instance-utils'
+import {minecraft} from './utils'
+import store from './store'
 
-type InstanceSettings = {
+export type InstanceSettings = {
   name: string;
   path: string;
   rconPort: number;
   rconPass: string;
   host: string;
   isLocal: boolean;
+  mcService: string;
 }
 
 export class InstanceInfo {
@@ -21,47 +22,25 @@ export class InstanceInfo {
   host: string
   isLocal: boolean
   path: string
+  mcService: string
   private rcon: Rcon | undefined
 
-  constructor({name, host, rconPort, rconPass, path, isLocal}: InstanceSettings) {
+  constructor({name, host, rconPort, rconPass, path, isLocal, mcService}: InstanceSettings) {
     this.name = name
     this.rconPort = rconPort
     this.rconPass = rconPass
     this.host = host
     this.isLocal = isLocal
     this.path = path
-  }
-
-  static findInstance(name: string): InstanceInfo | undefined {
-    const path = Path.join(config.directories.instances, name)
-    const settings = {name: name} as InstanceSettings
-    settings.isLocal = fs.existsSync(path)
-
-    if (settings.isLocal) {
-      settings.path = path
-      const props = utils.readMinecraftServerProperties(Path.join(path, 'server.properties'))
-      settings.host = '127.0.0.1'
-      settings.rconPort = props['rcon.port']
-      settings.rconPass = props['rcon.password'] || ''
-    } else {
-      const props = config.remoteServers.find(x => x.id === name)
-      if (!props) {
-        return undefined
-      }
-      settings.isLocal = false
-      settings.host = props.host
-      settings.rconPort = props.rconPort
-      settings.rconPass = props.rconPass
-    }
-    return new InstanceInfo(settings)
+    this.mcService = mcService
   }
 
   getMinecraftProperties() {
-    return utils.readMinecraftServerProperties(Path.join(this.path, 'server.properties'))
+    return minecraft.readServerProperties(Path.join(this.path, 'server.properties'))
   }
 
-  setMinecraftProperties(props: utils.MinecraftProperties) {
-    utils.writeMinecraftServerProperties(Path.join(this.path, 'server.properties'), props)
+  setMinecraftProperties(props: minecraft.MinecraftProperties) {
+    minecraft.writeServerProperties(Path.join(this.path, 'server.properties'), props)
   }
 
   private async getRcon() {
@@ -69,7 +48,7 @@ export class InstanceInfo {
       return this.rcon
     }
 
-    if (this.isLocal && this.getServiceStatus() === InstanceStatus.Inactive) {
+    if (this.isLocal && this.status() === InstanceStatus.Inactive) {
       throw new Error('service is not online')
     }
 
@@ -84,10 +63,6 @@ export class InstanceInfo {
   async sendRconCommand(command: string): Promise<string> {
     const rcon = await this.getRcon()
     return await rcon.send(command)
-  }
-
-  getServiceStatus() {
-    return InstanceInfo.getServiceStatus(this.name)
   }
 
   async isRconConnected() {
@@ -109,13 +84,27 @@ export class InstanceInfo {
     throw new Error('Not Implemented')
   }
 
-  static getServiceStatus(instanceName: string): InstanceStatus {
-    const command = `${config.mcService} is-active ${instanceName}`
+  status(): InstanceStatus {
+    const command = `${this.mcService} is-active ${this.name}`
     const result = shelljs.exec(command, {silent: true}).trim()
     if (result === 'active') {
       return InstanceStatus.Active
     }
     return InstanceStatus.Inactive
+  }
+
+  start() {
+    const command = `${this.mcService} start ${this.name}`
+    const result = shelljs.exec(command, {silent: true})
+  }
+
+  async stop() {
+    if (this.isLocal) {
+      const command = `${this.mcService} stop ${this.name}`
+      const result = shelljs.exec(command, {silent: true})
+    } else {
+      await this.sendRconCommand('stop')
+    }
   }
 }
 

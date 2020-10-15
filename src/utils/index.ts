@@ -1,9 +1,5 @@
-/* eslint-disable no-extend-native */
-interface String{
-  trimLines(): string;
-  trimIndent(): string;
-  trimMargin(): string;
-}
+export * as minecraft from './minecraft'
+export {throttle, CanceledError} from './throttle'
 
 String.prototype.trimLines = function () {
   return this.replace(/\s+(\r\n|\r|\n)\s+/gm, '\r\n').trim()

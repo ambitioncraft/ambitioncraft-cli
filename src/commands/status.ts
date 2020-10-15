@@ -2,7 +2,6 @@
 import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import shell from 'shelljs'
-import config from '../config.json'
 import {InstanceCommandBase} from '../command-base'
 import {InstanceStatus} from '../instance-info'
 
@@ -24,7 +23,7 @@ export default class StatusCommand extends InstanceCommandBase {
 
   // eslint-disable-next-line require-await
   async run() {
-    const status = this.instance.getServiceStatus()
+    const status = this.instance.status()
     if (status === InstanceStatus.Active) {
       this.success('Service: online')
     } else {

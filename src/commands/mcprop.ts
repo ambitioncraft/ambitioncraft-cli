@@ -4,7 +4,7 @@ import * as Parser from '@oclif/parser'
 import {InstanceCommandBase} from '../command-base'
 import {Colors} from '../command-response'
 import {InstanceInfo, InstanceStatus} from '../instance-info'
-import * as utils from '../utils/instance-utils'
+
 export default class McpropCommand extends InstanceCommandBase {
   static allowWithAll = true
   static description = 'change a setting in minecraft.properties'

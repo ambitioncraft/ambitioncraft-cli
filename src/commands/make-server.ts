@@ -5,12 +5,11 @@ import shell from 'shelljs'
 import fs from 'fs'
 import Path from 'path'
 import * as inquirer from 'inquirer'
-import config from '../config.json'
-import McCommand from '../command-base'
+import {McCommand} from '../command-base'
 import {makeWorld, MakeWorldCommand} from './make-world'
 import {InstanceInfo} from '../instance-info'
+import store from '../store'
 
-const images = fs.readdirSync(config.directories.images).filter(x => x !== 'common')
 export class MakeServerCommand extends McCommand {
   static description = 'Create a new Minecraft server instance.'
   static aliases = ['mkserver']
@@ -36,6 +35,7 @@ export class MakeServerCommand extends McCommand {
     const image: string = this.flags.image
     const name: string = args.name
 
+    const images = fs.readdirSync(store.config.directories.images).filter(x => x !== 'common')
     // const questions: inquirer.QuestionCollection<any>[] = []
     // if (!name) {
     //   const reply = await inquirer.prompt({
@@ -72,9 +72,9 @@ export class MakeServerCommand extends McCommand {
 }
 
 function createServer(name: string, image: string, cmd: McCommand) {
-  const instancePath = Path.join(config.directories.instances, name)
-  const imagePath = Path.join(config.directories.images, image)
-  const commonPath = Path.join(config.directories.images, 'common')
+  const instancePath = Path.join(store.config.directories.instances, name)
+  const imagePath = Path.join(store.config.directories.images, image)
+  const commonPath = Path.join(store.config.directories.images, 'common')
   // ensure server doesn't already exist
   if (fs.existsSync(instancePath)) {
     cmd.error(`server ${name} already exists.`)

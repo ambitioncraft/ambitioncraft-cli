@@ -5,11 +5,11 @@ import shell from 'shelljs'
 import fs, {write} from 'fs'
 import Path from 'path'
 import * as inquirer from 'inquirer'
-import config from '../config.json'
-import McCommand, {InstanceCommandBase} from '../command-base'
-import * as utils from '../utils/instance-utils'
+import {McCommand, InstanceCommandBase} from '../command-base'
+import * as utils from '../utils'
 import {InstanceInfo, InstanceStatus} from '../instance-info'
 import CommandResponse from '../command-response'
+import store from '../store'
 
 export class MakeWorldCommand extends InstanceCommandBase {
   static allowWithAll = false
@@ -41,7 +41,7 @@ export class MakeWorldCommand extends InstanceCommandBase {
   async run() {
     const {worldName} = this.args
     const {seed = '', remake = false, temp = false} = this.flags
-    if (this.instance.getServiceStatus() === InstanceStatus.Active) {
+    if (this.instance.status() === InstanceStatus.Active) {
       this.error(`Instance: ${this.instanceName} is currently active`)
     }
     makeWorld(this.instance.name, {worldName, seed, remake, temp}, this)
@@ -50,9 +50,9 @@ export class MakeWorldCommand extends InstanceCommandBase {
 }
 
 export function makeWorld(instanceName: string, {worldName = 'world', seed = '', temp = false, remake = false}, cmd: McCommand) {
-  const serverpath = Path.join(config.directories.instances, instanceName)
+  const serverpath = Path.join(store.config.directories.instances, instanceName)
   const propertiesPath = Path.join(serverpath, 'server.properties')
-  const props = utils.readMinecraftServerProperties(propertiesPath)
+  const props = utils.minecraft.readServerProperties(propertiesPath)
 
   let prefix = ''
   if (!worldName.startsWith('world_')) {
@@ -88,7 +88,7 @@ export function makeWorld(instanceName: string, {worldName = 'world', seed = '',
     props['level-seed'] = seed
   }
 
-  utils.writeMinecraftServerProperties(propertiesPath, props)
+  utils.minecraft.writeServerProperties(propertiesPath, props)
 
   cmd.info(`Created new world: ${levelName}`)
 }

@@ -4,30 +4,32 @@ import {Config, IConfig, load} from '@oclif/config'
 export type user = { name: string }
 
 export default class CommandContext {
-    // eslint-disable-next-line no-useless-constructor
-    commandResponse: CommandResponse
-    commandPrefix: string | undefined
-    constructor(public client: any, public readonly args: string[], public user?: user) {
-      this.commandResponse = new CommandResponse()
-    }
+  commandResponse: CommandResponse
+  commandPrefix: string | undefined
+  constructor(public readonly args: string[], public source?: any) {
+    this.commandResponse = new CommandResponse()
+  }
 
-    async executeCommand(cmdConfig: Config | IConfig) {
-      try {
-        // for now we need to clone the config to establish some sort of context.
-        const runConfig = Object.assign(Object.create(Object.getPrototypeOf(cmdConfig)), cmdConfig, {run_context: this})
-        await run(this.args, runConfig)
-      } catch (error) {
-        if (error.oclif?.exit !== 0) {
-          this.commandResponse.error(error.message)
-          // eslint-disable-next-line no-console
-          console.log(error.message)
-        }
+  async executeCommand(cmdConfig: Config | IConfig) {
+    try {
+      // for now we need to clone the config to establish some sort of context.
+      const runConfig = Object.assign(Object.create(Object.getPrototypeOf(cmdConfig)), cmdConfig, {run_context: this})
+      await run(this.args, runConfig)
+    } catch (error) {
+      if (error.oclif && error.oclif.exit === 0) {
+        // this was just a help command, ignore
+      } else {
+        // actual error occured
+        this.commandResponse.error(error.message)
+        // eslint-disable-next-line no-console
+        console.error(error.message)
       }
-      await this.commandResponse.flush()
     }
+    await this.commandResponse.flush()
+  }
 
-    createChildContext(args: string[]) {
-      return new CommandContext(this.client, args, this.user)
-    }
+  createChildContext(args: string[]) {
+    return new CommandContext(this.source, args)
+  }
 }
 

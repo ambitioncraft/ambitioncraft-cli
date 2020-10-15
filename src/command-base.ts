@@ -7,7 +7,7 @@ import CommandResponse from './command-response'
 import {InstanceInfo} from './instance-info'
 import store from './store'
 
-export default abstract class McCommand extends Command {
+export abstract class McCommand extends Command {
   static flags: flags.Input<any> = {
     help: flags.help({char: 'h', description: 'display command help'}),
   }
@@ -28,7 +28,7 @@ export default abstract class McCommand extends Command {
 
   constructor(argv: string[], config: any) {
     super(argv, config)
-    this.context  = config.run_context || new CommandContext(null, argv)
+    this.context  = config.run_context || new CommandContext(argv)
   }
 
   async init() {

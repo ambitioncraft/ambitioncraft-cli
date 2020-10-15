@@ -15,11 +15,11 @@ mc-cli
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g ambitioncraft-cli
+$ npm install -g @ambitioncraft/cli
 $ mc COMMAND
 running command...
 $ mc (-v|--version|version)
-ambitioncraft-cli/0.1.0 linux-x64 node-v13.14.0
+@ambitioncraft/cli/0.1.0 linux-x64 node-v13.14.0
 $ mc --help [COMMAND]
 USAGE
   $ mc COMMAND
@@ -85,7 +85,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0
 
 ## `mc instance COMMAND`
 
-Execute a command across one or more instances
+Execute a command across one or more instance
 
 ```
 USAGE

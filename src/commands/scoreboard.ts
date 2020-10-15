@@ -1,10 +1,8 @@
 
-import Command, {flags} from '@oclif/command'
+import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
-import shell from 'shelljs'
-import config from '../config.json'
-import McCommand, {InstanceCommandBase} from '../command-base'
-import {InstanceInfo, InstanceStatus} from '../instance-info'
+import {InstanceCommandBase} from '../command-base'
+import {InstanceInfo} from '../instance-info'
 
 export default class ScoreboardCommand extends InstanceCommandBase {
   static allowWithAll = true
