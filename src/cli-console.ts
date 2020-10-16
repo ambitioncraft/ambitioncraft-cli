@@ -13,8 +13,6 @@ try {
 
 const commandClient = new ConsoleCommandClient(config)
 
-commandClient.start()
-
-commandClient.once('ready', () => {
-  console.log('Ready')
+commandClient.start(() => {
+  console.log('Cli Ready')
 })

@@ -23,6 +23,7 @@ export default class StatusCommand extends InstanceCommandBase {
 
   // eslint-disable-next-line require-await
   async run() {
+    this.console(this.instanceName)
     const status = this.instance.status()
     if (status === InstanceStatus.Active) {
       this.success('Service: online')

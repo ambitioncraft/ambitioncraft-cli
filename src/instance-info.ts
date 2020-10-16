@@ -12,7 +12,6 @@ export type InstanceSettings = {
   rconPass: string;
   host: string;
   isLocal: boolean;
-  mcService: string;
 }
 
 export class InstanceInfo {
@@ -22,17 +21,15 @@ export class InstanceInfo {
   host: string
   isLocal: boolean
   path: string
-  mcService: string
   private rcon: Rcon | undefined
 
-  constructor({name, host, rconPort, rconPass, path, isLocal, mcService}: InstanceSettings) {
+  constructor({name, host, rconPort, rconPass, path, isLocal}: InstanceSettings) {
     this.name = name
     this.rconPort = rconPort
     this.rconPass = rconPass
     this.host = host
     this.isLocal = isLocal
     this.path = path
-    this.mcService = mcService
   }
 
   getMinecraftProperties() {
@@ -67,7 +64,7 @@ export class InstanceInfo {
 
   async isRconConnected() {
     try {
-      await this.sendRconCommand('list')
+      await this.sendRconCommand('ping')
       return true
     } catch {
       return false
@@ -85,7 +82,7 @@ export class InstanceInfo {
   }
 
   status(): InstanceStatus {
-    const command = `${this.mcService} is-active ${this.name}`
+    const command = `${store.config.mcService} is-active ${this.name}`
     const result = shelljs.exec(command, {silent: true}).trim()
     if (result === 'active') {
       return InstanceStatus.Active
@@ -94,13 +91,13 @@ export class InstanceInfo {
   }
 
   start() {
-    const command = `${this.mcService} start ${this.name}`
+    const command = `${store.config.mcService} start ${this.name}`
     const result = shelljs.exec(command, {silent: true})
   }
 
   async stop() {
     if (this.isLocal) {
-      const command = `${this.mcService} stop ${this.name}`
+      const command = `${store.config.mcService} stop ${this.name}`
       const result = shelljs.exec(command, {silent: true})
     } else {
       await this.sendRconCommand('stop')

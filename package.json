@@ -1,6 +1,6 @@
 {
   "name": "@ambitioncraft/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Matt Overall @MatthewOverall",
   "contributors": [
     "Nick Danut (https://github.com/ZzirGrizzyExo/)"
@@ -8,7 +8,7 @@
   "bin": {
     "mc": "./bin/run"
   },
-  "bugs": "https://github.com/MatthewOverall/ambitioncraft-cli/issues",
+  "bugs": "https://github.com/ambitioncraft/ambitioncraft-cli/issues",
   "engines": {
     "node": ">=8.5.0"
   },
@@ -18,7 +18,7 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/MatthewOverall/ambitioncraft-cli",
+  "homepage": "https://github.com/ambitioncraftl/ambitioncraft-cli",
   "keywords": [
     "oclif"
   ],
@@ -37,7 +37,7 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "MatthewOverall/ambitioncraft-cli",
+  "repository": "ambitioncraft/ambitioncraft-cli",
   "scripts": {
     "postpack": "rimraf oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",

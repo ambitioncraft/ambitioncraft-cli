@@ -45,13 +45,13 @@ export default class InstanceCommand extends McCommand {
     if (!(commandClass as unknown as typeof InstanceCommandBase).allowWithAll) {
       this.error(`${commandId}: is not a valid instance command`)
     }
-
     const servers = this.store.getAllInstances()
-
-    await Promise.all(servers.map(instance => {
+    for (const instance of servers) {
       const args = [...Object.values(this.args), instance.name] as string[]
       const childContext = this.context.createChildContext(args)
-      return childContext.executeCommand(this.config)
-    }))
+      // eslint-disable-next-line no-await-in-loop
+      await childContext.executeCommand(this.config)
+      // await this.config.runCommand(commandId, args.splice(1))
+    }
   }
 }

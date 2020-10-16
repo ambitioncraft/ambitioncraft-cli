@@ -7,23 +7,23 @@ import CommandContext from './command-context'
 import store from './store'
 
 export abstract class CommandClientBase extends EventEmitter {
+  commandConfig!: Config | IConfig;
   constructor(public config: CliConfig) {
     super()
     store.loadConfig(config)
   }
 
-    commandConfig!: Config | IConfig;
-    async init(): Promise<void> {
-      this.commandConfig = await load(__dirname)
-      await this.start()
-      this.emit('ready')
-    }
+  async start(cb: () => void): Promise<void> {
+    this.commandConfig = await load(__dirname)
+    await this.onStart()
+    this.emit('ready')
+    cb.apply(this)
+  }
 
-    protected abstract async start(): Promise<void>
-
-    stop() {
-      this.emit('close')
-    }
+  protected abstract async onStart(): Promise<void>
+  stop() {
+    this.emit('close')
+  }
 }
 
 export class ConsoleCommandClient extends CommandClientBase {
@@ -32,7 +32,7 @@ export class ConsoleCommandClient extends CommandClientBase {
   }
 
   // eslint-disable-next-line require-await
-  async start() {
+  async onStart() {
     const rl = readline.createInterface(process.stdin, process.stdout)
     rl.on('line', line => this.onInput(line))
     rl.on('close', () => this.stop())

@@ -29,7 +29,7 @@ export default class CommandContext {
   }
 
   createChildContext(args: string[]) {
-    return new CommandContext(this.source, args)
+    return new CommandContext(args)
   }
 }
 

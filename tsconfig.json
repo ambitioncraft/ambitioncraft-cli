@@ -9,10 +9,13 @@
     "outDir": "lib",
     "rootDir": "src",
     "strict": true,
-    "target": "es2017",
+    "target": "es6",
     "allowJs": true,
     "sourceMap": true
   },
+  "lib": [
+    "es2015"
+  ],
   "include": [
     "src/**/*"
   ]
