@@ -57,8 +57,7 @@
     "inquirer": "^7.3.3",
     "rcon-client": "^4.2.3",
     "shelljs": "^0.8.4",
-    "strip-ansi": "^6.0.0",
-    "pterodactyl.js": "^2.1.1"
+    "strip-ansi": "^6.0.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
