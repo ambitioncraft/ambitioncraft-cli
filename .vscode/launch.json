@@ -12,7 +12,7 @@
         "ts-node/register/transpile-only"
       ],
       "args": [
-        "src/cli-console.ts",
+        "src/panel-test.ts",
       ],
       "cwd": "${workspaceRoot}",
       "console": "integratedTerminal",
@@ -28,18 +28,18 @@
       // "args": [
       //   "help"
       // ],
-      "args": [
-        "instance",
-        "status",
-        "-a"
-      ],
       // "args": [
-      //   "make-world",
-      //   "test",
-      //   "speedrun",
-      //   "--seed=123456",
-      //   "-t",
+      //   "mkworld",
+      //   "east-uhc",
+      //   ""
       // ],
+      "args": [
+        "make-world",
+        "east-uhc",
+        "speedrun",
+        "--seed=123456",
+        "-t",
+      ],
       // "args": [
       //   "make-server",
       //   "test",

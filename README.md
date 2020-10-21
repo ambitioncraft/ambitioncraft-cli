@@ -19,7 +19,7 @@ $ npm install -g @ambitioncraft/cli
 $ mc COMMAND
 running command...
 $ mc (-v|--version|version)
-@ambitioncraft/cli/0.1.0 linux-x64 node-v13.14.0
+@ambitioncraft/cli/0.1.2 linux-x64 node-v13.14.0
 $ mc --help [COMMAND]
 USAGE
   $ mc COMMAND
@@ -64,7 +64,7 @@ EXAMPLES
   $ mc run give ilmango minecraft:stone_axe
 ```
 
-_See code: [src/commands/execute.ts](https://github.com/MatthewOverall/ambitioncraft-cli/blob/v0.1.0/src/commands/execute.ts)_
+_See code: [src/commands/execute.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.2/src/commands/execute.ts)_
 
 ## `mc help [COMMAND]`
 
@@ -106,7 +106,7 @@ EXAMPLES
   $ mc i status -i=uhc -i=uhc2
 ```
 
-_See code: [src/commands/instance.ts](https://github.com/MatthewOverall/ambitioncraft-cli/blob/v0.1.0/src/commands/instance.ts)_
+_See code: [src/commands/instance.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.2/src/commands/instance.ts)_
 
 ## `mc list INSTANCENAME`
 
@@ -126,7 +126,7 @@ EXAMPLE
   $ mc list uhc
 ```
 
-_See code: [src/commands/list.ts](https://github.com/MatthewOverall/ambitioncraft-cli/blob/v0.1.0/src/commands/list.ts)_
+_See code: [src/commands/list.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.2/src/commands/list.ts)_
 
 ## `mc make-server NAME`
 
@@ -152,7 +152,7 @@ EXAMPLES
   $ mc mkserver uhc --image=1.16.2
 ```
 
-_See code: [src/commands/make-server.ts](https://github.com/MatthewOverall/ambitioncraft-cli/blob/v0.1.0/src/commands/make-server.ts)_
+_See code: [src/commands/make-server.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.2/src/commands/make-server.ts)_
 
 ## `mc make-world INSTANCENAME WORLDNAME`
 
@@ -182,7 +182,7 @@ EXAMPLES
   $ mc mkworld speedrun setseedworld -tr
 ```
 
-_See code: [src/commands/make-world.ts](https://github.com/MatthewOverall/ambitioncraft-cli/blob/v0.1.0/src/commands/make-world.ts)_
+_See code: [src/commands/make-world.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.2/src/commands/make-world.ts)_
 
 ## `mc mcprop INSTANCENAME`
 
@@ -202,7 +202,7 @@ EXAMPLE
   $ mc mcprop uhc level-name="my world"
 ```
 
-_See code: [src/commands/mcprop.ts](https://github.com/MatthewOverall/ambitioncraft-cli/blob/v0.1.0/src/commands/mcprop.ts)_
+_See code: [src/commands/mcprop.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.2/src/commands/mcprop.ts)_
 
 ## `mc mspt INSTANCENAME`
 
@@ -222,7 +222,7 @@ EXAMPLE
   $ mc mspt uhc
 ```
 
-_See code: [src/commands/mspt.ts](https://github.com/MatthewOverall/ambitioncraft-cli/blob/v0.1.0/src/commands/mspt.ts)_
+_See code: [src/commands/mspt.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.2/src/commands/mspt.ts)_
 
 ## `mc scoreboard INSTANCENAME OBJECTIVE`
 
@@ -249,7 +249,7 @@ EXAMPLES
   $ mc sb uhc deaths -w
 ```
 
-_See code: [src/commands/scoreboard.ts](https://github.com/MatthewOverall/ambitioncraft-cli/blob/v0.1.0/src/commands/scoreboard.ts)_
+_See code: [src/commands/scoreboard.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.2/src/commands/scoreboard.ts)_
 
 ## `mc start INSTANCENAME`
 
@@ -269,7 +269,7 @@ EXAMPLE
   $ mc start uhc
 ```
 
-_See code: [src/commands/start.ts](https://github.com/MatthewOverall/ambitioncraft-cli/blob/v0.1.0/src/commands/start.ts)_
+_See code: [src/commands/start.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.2/src/commands/start.ts)_
 
 ## `mc status INSTANCENAME`
 
@@ -289,7 +289,7 @@ EXAMPLE
   $ mc status uhc
 ```
 
-_See code: [src/commands/status.ts](https://github.com/MatthewOverall/ambitioncraft-cli/blob/v0.1.0/src/commands/status.ts)_
+_See code: [src/commands/status.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.2/src/commands/status.ts)_
 
 ## `mc stop INSTANCENAME`
 
@@ -309,5 +309,5 @@ EXAMPLE
   $ mc stop uhc
 ```
 
-_See code: [src/commands/stop.ts](https://github.com/MatthewOverall/ambitioncraft-cli/blob/v0.1.0/src/commands/stop.ts)_
+_See code: [src/commands/stop.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.2/src/commands/stop.ts)_
 <!-- commandsstop -->

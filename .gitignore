@@ -8,3 +8,4 @@
 node_modules
 config.json
 oclif.manifest.json
+src/panel-test.ts

@@ -3,7 +3,8 @@ import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import {InstanceCommandBase} from '../command-base'
 import {Colors} from '../command-response'
-import {InstanceInfo, InstanceStatus} from '../instance-info'
+import {LocalInstance} from '../instance/local-instance'
+import {RemoteInstance} from '../instance/remote-instance'
 
 export default class McpropCommand extends InstanceCommandBase {
   static allowWithAll = true
@@ -18,7 +19,7 @@ export default class McpropCommand extends InstanceCommandBase {
 
   // eslint-disable-next-line require-await
   async run() {
-    const props = this.instance.getMinecraftProperties()
+    const props = await this.instance.getMinecraftProperties()
     const args = [...this.argv.splice(1)]
     const propKeys = Object.keys(props)
     args.forEach(a => {
@@ -30,7 +31,7 @@ export default class McpropCommand extends InstanceCommandBase {
       this.console(`${propName} set to ${value}`)
       props[propName] = value
     })
-    this.instance.setMinecraftProperties(props)
+    await this.instance.setMinecraftProperties(props)
     this.info(`${this.instanceName} server.properties updated`)
   }
 }

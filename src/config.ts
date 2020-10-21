@@ -12,9 +12,12 @@ export type Directories = {
 }
 
 export type RemoteServer = {
-  displayName: string;
+  panelUrl: string;
+  name: string;
   host: string;
-  id: string;
+  uuid: string;
+  userApiKey: string;
+  serverPort: number;
   rconPass: string;
   rconPort: number;
 }

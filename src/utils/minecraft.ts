@@ -1,8 +1,7 @@
 import fs from 'fs'
 
-export function readServerProperties(path: string): MinecraftProperties {
+export function parseServerProperties(text: string) {
   const props = {} as MinecraftProperties
-  const text = fs.readFileSync(path, 'utf8')
   text.split(/\r?\n/).forEach(l => {
     if (l.trim().startsWith('#')) {
       return
@@ -16,10 +15,20 @@ export function readServerProperties(path: string): MinecraftProperties {
   return props
 }
 
-export function writeServerProperties(path: string, props: MinecraftProperties) {
+export function flattenServerProperties(props: MinecraftProperties) {
   const lines: string[] = []
   Object.keys(props).forEach(k => lines.push(`${k}=${props[k]}`))
-  fs.writeFileSync(path, lines.join('\r\n'))
+  return lines.join('\r\n')
+}
+
+export function readServerProperties(path: string): MinecraftProperties {
+  const text = fs.readFileSync(path, 'utf8')
+  return parseServerProperties(text)
+}
+
+export function writeServerProperties(path: string, props: MinecraftProperties) {
+  const text = flattenServerProperties(props)
+  fs.writeFileSync(path, text)
 }
 
 export type MinecraftProperties = {

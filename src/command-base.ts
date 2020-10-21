@@ -4,7 +4,7 @@ import {PrettyPrintableError} from '@oclif/errors'
 import * as Parser from '@oclif/parser'
 import CommandContext from './command-context'
 import CommandResponse from './command-response'
-import {InstanceInfo} from './instance-info'
+import {InstanceInfo, InstanceStatus} from './instance/instance-info'
 import store from './store'
 
 export abstract class McCommand extends Command {

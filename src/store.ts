@@ -1,8 +1,10 @@
-import {InstanceInfo, InstanceSettings} from './instance-info'
+import {LocalInstance, LocalInstanceSettings} from './instance/local-instance'
 import {CliConfig} from './config'
 import * as utils from './utils'
 import fs from 'fs'
 import Path from 'path'
+import {InstanceInfo, InstanceSettings} from './instance/instance-info'
+import {RemoteInstance, RemoteInstanceSettings} from './instance/remote-instance'
 
 export class Store {
   config: CliConfig
@@ -28,26 +30,35 @@ export class Store {
 
   private findInstance(name: string): InstanceInfo | undefined {
     const path = Path.join(this.config.directories.instances, name)
-    const settings = {name: name} as InstanceSettings
-    settings.isLocal = fs.existsSync(path)
+    const isLocal = fs.existsSync(path)
 
-    if (settings.isLocal) {
-      settings.path = path
+    if (isLocal) {
+      const settings = {name: name} as LocalInstanceSettings
       const props = utils.minecraft.readServerProperties(Path.join(path, 'server.properties'))
+      settings.path = path
       settings.host = '127.0.0.1'
+      settings.port = props['server-port']
       settings.rconPort = props['rcon.port']
       settings.rconPass = props['rcon.password'] || ''
-    } else {
-      const props = this.config.remoteServers.find(x => x.id === name)
-      if (!props) {
-        return undefined
-      }
-      settings.isLocal = false
-      settings.host = props.host
-      settings.rconPort = props.rconPort
-      settings.rconPass = props.rconPass
+      return new LocalInstance(settings)
     }
-    return new InstanceInfo(settings)
+
+    const props = this.config.remoteServers.find(x => x.name === name)
+    if (!props) {
+      return undefined
+    }
+    const settings = {
+      name: name,
+      panelUrl: props.panelUrl,
+      host: props.host,
+      port: props.serverPort,
+      rconPort: props.rconPort,
+      rconPass: props.rconPass,
+      uuid: props.uuid,
+      userApiKey: props.userApiKey,
+    }
+
+    return new RemoteInstance(settings)
   }
 
   getAllInstances(): InstanceInfo[] {

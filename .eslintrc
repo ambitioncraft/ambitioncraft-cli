@@ -11,6 +11,7 @@
     "@typescript-eslint/no-unused-vars": [
       "off"
     ],
+    "unicorn/filename-case": ["off"],
     "no-return-await": "off",
     "no-warning-comments": "off",
     "require-await": "error",

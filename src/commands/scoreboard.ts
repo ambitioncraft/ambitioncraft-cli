@@ -2,7 +2,7 @@
 import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import {InstanceCommandBase} from '../command-base'
-import {InstanceInfo} from '../instance-info'
+import {InstanceInfo, InstanceStatus} from '../instance/instance-info'
 
 export default class ScoreboardCommand extends InstanceCommandBase {
   static allowWithAll = true

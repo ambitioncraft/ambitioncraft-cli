@@ -1,15 +1,19 @@
+/* eslint-disable no-console */
 
 import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import shell from 'shelljs'
-import fs, {write} from 'fs'
+import fs from 'fs'
 import Path from 'path'
-import * as inquirer from 'inquirer'
 import {McCommand, InstanceCommandBase} from '../command-base'
-import * as utils from '../utils'
-import {InstanceInfo, InstanceStatus} from '../instance-info'
-import CommandResponse from '../command-response'
-import store from '../store'
+import {InstanceInfo, InstanceStatus} from '../instance/instance-info'
+import {LocalInstance, RemoteInstance} from '..'
+import loadDirectory from '../panel/user-client/server/files/loadDirectory'
+import compressFiles from '../panel/user-client/server/files/compressFiles'
+import renameFiles from '../panel/user-client/server/files/renameFiles'
+import decompressFiles from '../panel/user-client/server/files/decompressFiles'
+import deleteFiles from '../panel/user-client/server/files/deleteFiles'
+import createDirectory from '../panel/user-client/server/files/createDirectory'
 
 export class MakeWorldCommand extends InstanceCommandBase {
   static allowWithAll = false
@@ -41,19 +45,16 @@ export class MakeWorldCommand extends InstanceCommandBase {
   async run() {
     const {worldName} = this.args
     const {seed = '', remake = false, temp = false} = this.flags
-    if (this.instance.status() === InstanceStatus.Active) {
-      this.error(`Instance: ${this.instanceName} is currently active`)
+    const status = await this.instance.status()
+    if (status !== InstanceStatus.offline) {
+      this.error(`Instance: ${this.instanceName} is not offline`)
     }
-    makeWorld(this.instance.name, {worldName, seed, remake, temp}, this)
+    makeWorld(this.instance, {worldName, seed, remake, temp}, this)
     await Promise.resolve()
   }
 }
 
-export function makeWorld(instanceName: string, {worldName = 'world', seed = '', temp = false, remake = false}, cmd: McCommand) {
-  const serverpath = Path.join(store.config.directories.instances, instanceName)
-  const propertiesPath = Path.join(serverpath, 'server.properties')
-  const props = utils.minecraft.readServerProperties(propertiesPath)
-
+export async function makeWorld(instance: InstanceInfo, {worldName = 'world', seed = '', temp = false, remake = false}, cmd: McCommand) {
   let prefix = ''
   if (!worldName.startsWith('world_')) {
     prefix += 'world_'
@@ -61,35 +62,74 @@ export function makeWorld(instanceName: string, {worldName = 'world', seed = '',
   if (temp && !worldName.includes('temp_')) {
     prefix += 'temp_'
   }
-
-  let count = 1
-  // check to see if the world already exists, if so, increment the level name
-  let levelName = `${prefix}${worldName}`
-  while (fs.existsSync(Path.join(serverpath, levelName))) {
-    levelName = `${prefix}${worldName}(${count})`
-    count++
+  const desiredWorldName = `${prefix}${worldName}`
+  let levelName = desiredWorldName
+  if (instance instanceof LocalInstance) {
+    levelName = makeLocalWorldFolder(instance, desiredWorldName)
+  } else if (instance instanceof RemoteInstance) {
+    levelName = await makeRemoteWorldFolder(instance, desiredWorldName)
+  } else {
+    cmd.error('NOPE!')
   }
 
-  if (levelName !== `${prefix}${worldName}`) {
-    cmd.info(`${worldName} already exists, using ${levelName} instead.`)
+  if (levelName !== desiredWorldName) {
+    cmd.info(`${desiredWorldName} already exists, using ${levelName} instead.`)
   }
 
-  const levelPath = Path.join(serverpath, levelName)
-  fs.mkdirSync(levelPath)
   cmd.info(`Created dir ${levelName}`)
-
-  shell.cp('-r', Path.join(serverpath, 'WORLD.TEMPLATE/*'), levelPath)
   cmd.info(`Coppied contents of WORLD.TEMPLATE to ${levelName}`)
 
   cmd.info('Modifying minecraft server.properties')
+  const props = await instance.getMinecraftProperties()
   props['level-name'] = levelName
-
-  if (!seed && remake) {
+  if (!remake) {
     props['level-seed'] = seed
   }
-
-  utils.minecraft.writeServerProperties(propertiesPath, props)
-
+  await instance.setMinecraftProperties(props)
   cmd.info(`Created new world: ${levelName}`)
 }
 
+function getNextLevelName(desiredWorldName: string, dirListing: string[]): string {
+  let count = 1
+  // check to see if the world already exists, if so, increment the level name
+  let levelName = `${desiredWorldName}`
+  while (dirListing.some(x => x === levelName)) {
+    levelName = `${desiredWorldName}(${count})`
+    count++
+  }
+  return levelName
+}
+
+export function makeLocalWorldFolder(instance: LocalInstance, desiredWorldName: string) {
+  const serverpath = instance.path
+  const dirListing = fs.readdirSync(Path.join(serverpath))
+  const levelName = getNextLevelName(desiredWorldName, dirListing)
+
+  const levelPath = Path.join(serverpath, levelName)
+  fs.mkdirSync(levelPath)
+  shell.cp('-r', Path.join(serverpath, 'WORLD.TEMPLATE/*'), levelPath)
+  return levelName
+}
+
+export async function makeRemoteWorldFolder(instance: RemoteInstance, desiredWorldName: string) {
+  const client = await instance.getUserClient()
+  const {http} = client
+  const {uuid} = instance
+
+  const files = await loadDirectory(http, uuid, '/')
+  const levelName = getNextLevelName(desiredWorldName, files.map(x => x.name))
+
+  const response = await compressFiles(http, uuid, '/', ['WORLD.TEMPLATE'])
+  console.log('compressed WORLD.TEMPLATE')
+
+  await renameFiles(http, uuid, '/', [{from: 'WORLD.TEMPLATE', to: levelName}])
+  console.log('renamed WORLD.TEMPLATE to actual world name')
+
+  await (decompressFiles(http, uuid, '/', response.name))
+  console.log('restored WORLD.TEMPLATE')
+
+  await (deleteFiles(http, uuid, '/', [response.name]))
+  console.log('removed temp archive')
+
+  return levelName
+}

@@ -1,3 +1,4 @@
+/* eslint-disable no-extend-native */
 export * as minecraft from './minecraft'
 export {throttle, CanceledError} from './throttle'
 

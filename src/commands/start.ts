@@ -2,7 +2,7 @@ import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import shell from 'shelljs'
 import {InstanceCommandBase} from '../command-base'
-import {InstanceStatus} from '../instance-info'
+import {InstanceInfo, InstanceStatus} from '../instance/instance-info'
 import retry from 'async-retry'
 import store from '../store'
 export default class StartCommand extends InstanceCommandBase {
@@ -25,18 +25,19 @@ export default class StartCommand extends InstanceCommandBase {
   static maxTimout = 20000
   // eslint-disable-next-line require-await
   async run() {
-    const status = this.instance.status()
-    if (status === InstanceStatus.Active) {
+    const status = await this.instance.status()
+    if (status === 'starting' || status === 'running') {
       this.warn(`instance: ${this.instanceName} already active`)
       return
     }
 
-    this.instance.start()
+    await this.instance.start()
     this.info(`instance: ${this.instanceName} is starting`)
     try {
       const isReady = await retry(async abort => {
-        await this.instance.sendRconCommand('say ping')
-        return true
+        const result = await this.instance.isReady()
+        if (!result) throw new Error('not started yet...')
+        return result
       }, {
         maxRetryTime: 60000,
         minTimeout: 2000,

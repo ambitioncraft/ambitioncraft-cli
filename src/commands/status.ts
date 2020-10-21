@@ -3,7 +3,8 @@ import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import shell from 'shelljs'
 import {InstanceCommandBase} from '../command-base'
-import {InstanceStatus} from '../instance-info'
+import {InstanceInfo, InstanceStatus} from '../instance/instance-info'
+import {LocalInstance} from '../instance/local-instance'
 
 export default class StatusCommand extends InstanceCommandBase {
   static allowWithAll = true
@@ -24,13 +25,14 @@ export default class StatusCommand extends InstanceCommandBase {
   // eslint-disable-next-line require-await
   async run() {
     this.console(this.instanceName)
-    const status = this.instance.status()
-    if (status === InstanceStatus.Active) {
-      this.success('Service: online')
+    const status = await this.instance.status()
+    if (status === 'running' || status === 'starting') {
+      this.success(`Service: ${status}`)
     } else {
-      this.danger('Service: offline')
+      this.danger(`Service: ${status}`)
     }
-    const rconConnected = await this.instance.isRconConnected()
+
+    const rconConnected = await this.instance.isReady()
     if (rconConnected) {
       this.success('Rcon: online')
     } else {

@@ -7,8 +7,8 @@ import Path from 'path'
 import * as inquirer from 'inquirer'
 import {McCommand} from '../command-base'
 import {makeWorld, MakeWorldCommand} from './make-world'
-import {InstanceInfo} from '../instance-info'
 import store from '../store'
+import {LocalInstance} from '..'
 
 export class MakeServerCommand extends McCommand {
   static description = 'Create a new Minecraft server instance.'
@@ -66,8 +66,8 @@ export class MakeServerCommand extends McCommand {
       this.error(`Invalid image selected: ${image}`)
     }
 
-    createServer(name, image, this)
-    makeWorld(name, {worldName: 'world'}, this)
+    const instance = createServer(name, image, this) as LocalInstance
+    makeWorld(instance, {worldName: 'world'}, this)
   }
 }
 
@@ -84,4 +84,5 @@ function createServer(name: string, image: string, cmd: McCommand) {
   shell.cp('-r', imagePath, instancePath)
   shell.cp('-r', Path.join(commonPath, '/*'), instancePath)
   cmd.info(`Server:${name} created using the ${image} image.`)
+  return store.getInstanceInfo(name)
 }

@@ -2,7 +2,7 @@ import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import shell from 'shelljs'
 import {InstanceCommandBase} from '../command-base'
-import {InstanceStatus} from '../instance-info'
+import {InstanceInfo, InstanceStatus} from '../instance/instance-info'
 
 export default class StartCommand extends InstanceCommandBase {
   static allowWithAll = true
@@ -20,12 +20,15 @@ export default class StartCommand extends InstanceCommandBase {
 
   // eslint-disable-next-line require-await
   async run() {
-    const status = this.instance.status()
-    if (status !== InstanceStatus.Active) {
-      this.warn(`instance: ${this.instanceName} is not running`)
+    const status = await this.instance.status()
+    if (status === 'offline') {
+      this.warn('instance: is offline')
+    }
+    if (status === 'stopping') {
+      this.warn('instance: is stopping')
       return
     }
     await this.instance.stop()
-    this.success(`instance: ${this.instanceName} stopped`)
+    this.warn(`instance: ${this.instanceName} stopped`)
   }
 }

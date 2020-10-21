@@ -3,7 +3,7 @@ import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import {InstanceCommandBase} from '../command-base'
 import {Colors} from '../command-response'
-import {InstanceInfo, InstanceStatus} from '../instance-info'
+import {InstanceInfo, InstanceStatus} from '../instance/instance-info'
 
 export default class MsptCommand extends InstanceCommandBase {
   static allowWithAll = true
