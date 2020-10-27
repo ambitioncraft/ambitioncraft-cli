@@ -3,7 +3,7 @@ import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import {InstanceCommandBase} from '../command-base'
 import {Colors} from '../command-response'
-import {InstanceInfo, InstanceStatus} from '../instance/instance-info'
+import {RealmInfo, RealmStatus} from '../realm/realm-info'
 
 export default class MsptCommand extends InstanceCommandBase {
   static allowWithAll = true
@@ -17,8 +17,10 @@ export default class MsptCommand extends InstanceCommandBase {
   static args: Parser.args.IArg<any>[] = [...InstanceCommandBase.args]
 
   async run() {
-    // this.context.commandResponse.isEmbed = false
-    const {tps, mspt} = await queryMSPT(this.instance)
+    if (!this.instance.isActiveInstance) {
+      this.error(`${this.instanceName} is not active`)
+    }
+    const {tps, mspt} = await queryMSPT(this.instance.realm)
     const text = `TPS: ${tps.toFixed(1)} MSPT: ${mspt.toFixed(1)}`
 
     if (mspt >= 50) {
@@ -31,7 +33,7 @@ export default class MsptCommand extends InstanceCommandBase {
   }
 }
 
-export async function queryMSPT(instance: InstanceInfo) {
+export async function queryMSPT(instance: RealmInfo) {
   const data = await instance.sendRconCommand('script run reduce(last_tick_times(),_a+_,0)/100;')
   const mspt = parseFloat(data.split(' ')[2])
   let tps

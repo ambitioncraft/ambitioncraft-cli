@@ -12,7 +12,7 @@
         "ts-node/register/transpile-only"
       ],
       "args": [
-        "src/panel-test.ts",
+        "src/cli-console.ts",
       ],
       "cwd": "${workspaceRoot}",
       "console": "integratedTerminal",
@@ -25,21 +25,23 @@
       "name": "Debug Single",
       "request": "launch",
       "program": "${workspaceFolder}/bin/run",
-      // "args": [
-      //   "help"
-      // ],
+      "args": [
+        "start",
+        "tnt.speedrun"
+      ],
       // "args": [
       //   "mkworld",
-      //   "east-uhc",
-      //   ""
+      //   "tnt.speedrun",
+      //   "hunter",
+      //   "-t"
       // ],
-      "args": [
-        "make-world",
-        "east-uhc",
-        "speedrun",
-        "--seed=123456",
-        "-t",
-      ],
+      // "args": [
+      //   "make-world",
+      //   "east-uhc",
+      //   "speedrun",
+      //   "--seed=123456",
+      //   "-t",
+      // ],
       // "args": [
       //   "make-server",
       //   "test",

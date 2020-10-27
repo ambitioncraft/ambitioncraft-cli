@@ -2,7 +2,21 @@ export interface CliConfig {
   directories: Directories;
   instanceAliases: { [key: string]: string };
   mcService: string;
+  realms: {[key: string]: LocalRealmConfig | RemoteRealmConfig };
   remoteServers: RemoteServer[];
+}
+
+export type LocalRealmConfig = {
+  provider: 'local';
+  path: string;
+}
+
+export type RemoteRealmConfig = {
+  provider: 'pterodactyl';
+  panelUrl: string;
+  host: string;
+  uuid: string;
+  userApiKey: string;
 }
 
 export type Directories = {

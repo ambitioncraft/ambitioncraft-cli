@@ -30,44 +30,44 @@ export class MakeServerCommand extends McCommand {
 
   // eslint-disable-next-line require-await
   async run() {
-    const {args} = this.parse(MakeServerCommand)
+    // const {args} = this.parse(MakeServerCommand)
 
-    const image: string = this.flags.image
-    const name: string = args.name
+    // const image: string = this.flags.image
+    // const name: string = args.name
 
-    const images = fs.readdirSync(store.config.directories.images).filter(x => x !== 'common')
-    // const questions: inquirer.QuestionCollection<any>[] = []
-    // if (!name) {
-    //   const reply = await inquirer.prompt({
-    //     name: 'name',
-    //     message: 'Server name without spaces',
-    //   })
-    //   name = reply.name
+    // const images = fs.readdirSync(store.config.directories.images).filter(x => x !== 'common')
+    // // const questions: inquirer.QuestionCollection<any>[] = []
+    // // if (!name) {
+    // //   const reply = await inquirer.prompt({
+    // //     name: 'name',
+    // //     message: 'Server name without spaces',
+    // //   })
+    // //   name = reply.name
+    // // }
+
+    // if (name.match(/[^a-z0-9\-_]/)) {
+    //   this.error(
+    //     `Invalid server name: '${name}'
+    //     The name must be lowercase and contain only letters, numbers, underscore, and hypens.
+    //   `.trimIndent())
     // }
 
-    if (name.match(/[^a-z0-9\-_]/)) {
-      this.error(
-        `Invalid server name: '${name}'
-        The name must be lowercase and contain only letters, numbers, underscore, and hypens.
-      `.trimIndent())
-    }
+    // // if (!images.includes(image)) {
+    // //   const reply = await inquirer.prompt({
+    // //     name: 'image',
+    // //     message: 'select an image',
+    // //     type: 'list',
+    // //     choices: images.map(v => ({name: v})),
+    // //   })
+    // //   image = reply.image
+    // // }
 
     // if (!images.includes(image)) {
-    //   const reply = await inquirer.prompt({
-    //     name: 'image',
-    //     message: 'select an image',
-    //     type: 'list',
-    //     choices: images.map(v => ({name: v})),
-    //   })
-    //   image = reply.image
+    //   this.error(`Invalid image selected: ${image}`)
     // }
 
-    if (!images.includes(image)) {
-      this.error(`Invalid image selected: ${image}`)
-    }
-
-    const instance = createServer(name, image, this) as LocalInstance
-    makeWorld(instance, {worldName: 'world'}, this)
+    // const instance = createServer(name, image, this) as LocalInstance
+    // makeWorld(instance, {worldName: 'world'}, this)
   }
 }
 
@@ -84,5 +84,5 @@ function createServer(name: string, image: string, cmd: McCommand) {
   shell.cp('-r', imagePath, instancePath)
   shell.cp('-r', Path.join(commonPath, '/*'), instancePath)
   cmd.info(`Server:${name} created using the ${image} image.`)
-  return store.getInstanceInfo(name)
+  return store.getRealm(name)
 }

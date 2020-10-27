@@ -1,10 +1,7 @@
-import {LocalInstance, LocalInstanceSettings} from './instance/local-instance'
+import {LocalRealm, LocalRealmSettings} from './realm/local-realm'
 import {CliConfig} from './config'
-import * as utils from './utils'
-import fs from 'fs'
-import Path from 'path'
-import {InstanceInfo, InstanceSettings} from './instance/instance-info'
-import {RemoteInstance, RemoteInstanceSettings} from './instance/remote-instance'
+import {RealmInfo, RealmSettings} from './realm/realm-info'
+import {RemoteRealm, RemoteRealmSettings} from './realm/remote-realm'
 
 export class Store {
   config: CliConfig
@@ -16,56 +13,26 @@ export class Store {
     this.config = config
   }
 
-  private instances: Record<string, InstanceInfo> = {}
-  getInstanceInfo(instanceName: string) {
-    if (!this.instances[instanceName]) {
-      const instance = this.findInstance(instanceName)
-      if (!instance) {
-        return undefined
-      }
-      this.instances[instanceName] = instance
+  private realms: Record<string, RealmInfo> = {}
+  async getRealm(name: string): Promise<RealmInfo | undefined> {
+    if (!this.realms[name]) {
+      const realm = await this.findRealm(name)
+      if (!realm) return undefined
+      this.realms[name] = realm
     }
-    return this.instances[instanceName]
+    return this.realms[name]
   }
 
-  private findInstance(name: string): InstanceInfo | undefined {
-    const path = Path.join(this.config.directories.instances, name)
-    const isLocal = fs.existsSync(path)
-
-    if (isLocal) {
-      const settings = {name: name} as LocalInstanceSettings
-      const props = utils.minecraft.readServerProperties(Path.join(path, 'server.properties'))
-      settings.path = path
-      settings.host = '127.0.0.1'
-      settings.port = props['server-port']
-      settings.rconPort = props['rcon.port']
-      settings.rconPass = props['rcon.password'] || ''
-      return new LocalInstance(settings)
-    }
-
-    const props = this.config.remoteServers.find(x => x.name === name)
-    if (!props) {
+  private async findRealm(name: string): Promise<RealmInfo | undefined> {
+    const realmConfig = this.config.realms[name]
+    switch (realmConfig?.provider) {
+    case 'local':
+      return LocalRealm.createFromConfig(name, realmConfig)
+    case 'pterodactyl':
+      return await RemoteRealm.createFromConfig(name, realmConfig)
+    default:
       return undefined
     }
-    const settings = {
-      name: name,
-      panelUrl: props.panelUrl,
-      host: props.host,
-      port: props.serverPort,
-      rconPort: props.rconPort,
-      rconPass: props.rconPass,
-      uuid: props.uuid,
-      userApiKey: props.userApiKey,
-    }
-
-    return new RemoteInstance(settings)
-  }
-
-  getAllInstances(): InstanceInfo[] {
-    return fs.readdirSync(this.config.directories.instances, {withFileTypes: true})
-    .filter(dir => dir.isDirectory())
-    .map(dir => this.getInstanceInfo(dir.name))
-    .filter(x => x) as InstanceInfo[]
   }
 }
 
@@ -77,4 +44,3 @@ try {
 }
 const store = new Store(config)
 export default store
-

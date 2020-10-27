@@ -29,8 +29,8 @@ USAGE
 # Commands
 <!-- commands -->
 * [`mc execute INSTANCENAME MCCOMMAND`](#mc-execute-instancename-mccommand)
+* [`mc hello INSTANCENAME`](#mc-hello-instancename)
 * [`mc help [COMMAND]`](#mc-help-command)
-* [`mc instance COMMAND`](#mc-instance-command)
 * [`mc list INSTANCENAME`](#mc-list-instancename)
 * [`mc make-server NAME`](#mc-make-server-name)
 * [`mc make-world INSTANCENAME WORLDNAME`](#mc-make-world-instancename-worldname)
@@ -66,6 +66,23 @@ EXAMPLES
 
 _See code: [src/commands/execute.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/execute.ts)_
 
+## `mc hello INSTANCENAME`
+
+description of this example command
+
+```
+USAGE
+  $ mc hello INSTANCENAME
+
+ARGUMENTS
+  INSTANCENAME  Name of the server instance
+
+OPTIONS
+  -h, --help  display command help
+```
+
+_See code: [src/commands/hello.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/hello.ts)_
+
 ## `mc help [COMMAND]`
 
 display help for mc
@@ -83,31 +100,6 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
 
-## `mc instance COMMAND`
-
-Execute a command across one or more instance
-
-```
-USAGE
-  $ mc instance COMMAND
-
-ARGUMENTS
-  COMMAND  command to execute
-
-OPTIONS
-  -a, --all                execute command for all instances
-  -i, --instance=instance  instance to use
-
-ALIASES
-  $ mc i
-
-EXAMPLES
-  $ mc instance mspt --all
-  $ mc i status -i=uhc -i=uhc2
-```
-
-_See code: [src/commands/instance.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/instance.ts)_
-
 ## `mc list INSTANCENAME`
 
 list all players on a server
@@ -122,8 +114,9 @@ ARGUMENTS
 OPTIONS
   -h, --help  display command help
 
-EXAMPLE
-  $ mc list uhc
+EXAMPLES
+  $ mc list uhc --realm=east
+  $ mc list east.uhc
 ```
 
 _See code: [src/commands/list.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/list.ts)_
@@ -265,8 +258,9 @@ ARGUMENTS
 OPTIONS
   -h, --help  display command help
 
-EXAMPLE
-  $ mc start uhc
+EXAMPLES
+  $ mc start uhc.paper
+  $ mc start paper --realm=uhc
 ```
 
 _See code: [src/commands/start.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/start.ts)_
@@ -285,8 +279,9 @@ ARGUMENTS
 OPTIONS
   -h, --help  display command help
 
-EXAMPLE
+EXAMPLES
   $ mc status uhc
+  $ mc status --realm=uhc
 ```
 
 _See code: [src/commands/status.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/status.ts)_
@@ -305,8 +300,9 @@ ARGUMENTS
 OPTIONS
   -h, --help  display command help
 
-EXAMPLE
+EXAMPLES
   $ mc stop uhc
+  $ mc stop --realm=uhc
 ```
 
 _See code: [src/commands/stop.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/stop.ts)_

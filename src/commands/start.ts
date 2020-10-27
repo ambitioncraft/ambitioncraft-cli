@@ -2,7 +2,7 @@ import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import shell from 'shelljs'
 import {InstanceCommandBase} from '../command-base'
-import {InstanceInfo, InstanceStatus} from '../instance/instance-info'
+import {RealmInfo, RealmStatus} from '../realm/realm-info'
 import retry from 'async-retry'
 import store from '../store'
 export default class StartCommand extends InstanceCommandBase {
@@ -10,7 +10,8 @@ export default class StartCommand extends InstanceCommandBase {
   static description = 'start a server instance'
 
   static examples = [
-    '$ mc start uhc',
+    '$ mc start uhc.paper',
+    '$ mc start paper --realm=uhc',
   ]
 
   static args: Parser.args.IArg<any>[] = [
@@ -25,14 +26,8 @@ export default class StartCommand extends InstanceCommandBase {
   static maxTimout = 20000
   // eslint-disable-next-line require-await
   async run() {
-    const status = await this.instance.status()
-    if (status === 'starting' || status === 'running') {
-      this.warn(`instance: ${this.instanceName} already active`)
-      return
-    }
-
     await this.instance.start()
-    this.info(`instance: ${this.instanceName} is starting`)
+    this.info(`server: ${this.instanceName} is starting`)
     try {
       const isReady = await retry(async abort => {
         const result = await this.instance.isReady()
@@ -48,6 +43,7 @@ export default class StartCommand extends InstanceCommandBase {
       })
       if (isReady) {
         this.success('server is online')
+        return
       }
     } catch {
       this.danger('timeout: server did not respond')

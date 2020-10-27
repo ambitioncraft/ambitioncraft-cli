@@ -1,6 +1,6 @@
 
 import axios, {AxiosInstance} from 'axios'
-
+export {AxiosInstance}
 export default class PanelUserClient {
   http: AxiosInstance
 

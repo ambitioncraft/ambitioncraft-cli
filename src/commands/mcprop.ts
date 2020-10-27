@@ -3,8 +3,8 @@ import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import {InstanceCommandBase} from '../command-base'
 import {Colors} from '../command-response'
-import {LocalInstance} from '../instance/local-instance'
-import {RemoteInstance} from '../instance/remote-instance'
+import {LocalRealm} from '../realm/local-realm'
+import {RemoteRealm} from '../realm/remote-realm'
 
 export default class McpropCommand extends InstanceCommandBase {
   static allowWithAll = true

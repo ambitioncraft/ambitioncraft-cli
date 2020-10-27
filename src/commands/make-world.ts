@@ -6,14 +6,16 @@ import shell from 'shelljs'
 import fs from 'fs'
 import Path from 'path'
 import {McCommand, InstanceCommandBase} from '../command-base'
-import {InstanceInfo, InstanceStatus} from '../instance/instance-info'
-import {LocalInstance, RemoteInstance} from '..'
+import {RealmInfo, RealmStatus} from '../realm/realm-info'
 import loadDirectory from '../panel/user-client/server/files/loadDirectory'
 import compressFiles from '../panel/user-client/server/files/compressFiles'
 import renameFiles from '../panel/user-client/server/files/renameFiles'
 import decompressFiles from '../panel/user-client/server/files/decompressFiles'
 import deleteFiles from '../panel/user-client/server/files/deleteFiles'
 import createDirectory from '../panel/user-client/server/files/createDirectory'
+import {Instance} from '../instance/instance'
+import {LocalRealm} from '../realm/local-realm'
+import {RemoteRealm} from '../realm/remote-realm'
 
 export class MakeWorldCommand extends InstanceCommandBase {
   static allowWithAll = false
@@ -45,16 +47,17 @@ export class MakeWorldCommand extends InstanceCommandBase {
   async run() {
     const {worldName} = this.args
     const {seed = '', remake = false, temp = false} = this.flags
-    const status = await this.instance.status()
-    if (status !== InstanceStatus.offline) {
-      this.error(`Instance: ${this.instanceName} is not offline`)
+
+    if (await this.instance.realm.isRunning()) {
+      this.error(`Server: ${this.instanceName} is not offline`)
     }
+
     makeWorld(this.instance, {worldName, seed, remake, temp}, this)
     await Promise.resolve()
   }
 }
 
-export async function makeWorld(instance: InstanceInfo, {worldName = 'world', seed = '', temp = false, remake = false}, cmd: McCommand) {
+export async function makeWorld(instance: Instance, {worldName = 'world', seed = '', temp = false, remake = false}, cmd: McCommand) {
   let prefix = ''
   if (!worldName.startsWith('world_')) {
     prefix += 'world_'
@@ -64,10 +67,10 @@ export async function makeWorld(instance: InstanceInfo, {worldName = 'world', se
   }
   const desiredWorldName = `${prefix}${worldName}`
   let levelName = desiredWorldName
-  if (instance instanceof LocalInstance) {
+  if (instance.realm instanceof LocalRealm) {
     levelName = makeLocalWorldFolder(instance, desiredWorldName)
-  } else if (instance instanceof RemoteInstance) {
-    levelName = await makeRemoteWorldFolder(instance, desiredWorldName)
+  } else if (instance.realm instanceof RemoteRealm) {
+    levelName = await makeRemoteWorldFolder(instance,  desiredWorldName)
   } else {
     cmd.error('NOPE!')
   }
@@ -100,8 +103,9 @@ function getNextLevelName(desiredWorldName: string, dirListing: string[]): strin
   return levelName
 }
 
-export function makeLocalWorldFolder(instance: LocalInstance, desiredWorldName: string) {
-  const serverpath = instance.path
+export function makeLocalWorldFolder(instance: Instance, desiredWorldName: string) {
+  const realm = instance.realm as LocalRealm
+  const serverpath = Path.join(realm.path, instance.path)
   const dirListing = fs.readdirSync(Path.join(serverpath))
   const levelName = getNextLevelName(desiredWorldName, dirListing)
 
@@ -111,18 +115,19 @@ export function makeLocalWorldFolder(instance: LocalInstance, desiredWorldName: 
   return levelName
 }
 
-export async function makeRemoteWorldFolder(instance: RemoteInstance, desiredWorldName: string) {
-  const client = await instance.getUserClient()
+export async function makeRemoteWorldFolder(instance: Instance, desiredWorldName: string) {
+  const realm = instance.realm as RemoteRealm
+  const client = realm.client
   const {http} = client
-  const {uuid} = instance
+  const {uuid} = realm
 
-  const files = await loadDirectory(http, uuid, '/')
+  const files = await loadDirectory(http, uuid, instance.path)
   const levelName = getNextLevelName(desiredWorldName, files.map(x => x.name))
-
-  const response = await compressFiles(http, uuid, '/', ['WORLD.TEMPLATE'])
+  const worldTemplate = Path.join(instance.path, 'WORLD.TEMPLATE')
+  const response = await compressFiles(http, uuid, '/', [worldTemplate])
   console.log('compressed WORLD.TEMPLATE')
 
-  await renameFiles(http, uuid, '/', [{from: 'WORLD.TEMPLATE', to: levelName}])
+  await renameFiles(http, uuid, instance.path, [{from: 'WORLD.TEMPLATE', to: levelName}])
   console.log('renamed WORLD.TEMPLATE to actual world name')
 
   await (decompressFiles(http, uuid, '/', response.name))

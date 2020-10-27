@@ -2,7 +2,7 @@
 import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import {InstanceCommandBase} from '../command-base'
-import {InstanceInfo, InstanceStatus} from '../instance/instance-info'
+import {RealmInfo, RealmStatus} from '../realm/realm-info'
 
 export default class ScoreboardCommand extends InstanceCommandBase {
   static allowWithAll = true
@@ -28,7 +28,10 @@ export default class ScoreboardCommand extends InstanceCommandBase {
   async run() {
     const {objective} = this.args
     const {whitelist} = this.flags
-    const scores = await getScores(this.instance, objective, whitelist)
+    if (!this.instance.isActiveInstance) {
+      this.error(`${this.instanceName} is not active`)
+    }
+    const scores = await getScores(this.instance.realm, objective, whitelist)
 
     this.response
     .setTitle(`Scoreboard: ${objective}`)
@@ -38,7 +41,7 @@ export default class ScoreboardCommand extends InstanceCommandBase {
   }
 }
 
-export async function getScores(instance: InstanceInfo, objective: string, whiteListOnly: boolean) {
+export async function getScores(instance: RealmInfo, objective: string, whiteListOnly: boolean) {
   const players = await getPlayers(instance, whiteListOnly)
 
   // Get scores for each player
@@ -66,7 +69,7 @@ export async function getScores(instance: InstanceInfo, objective: string, white
 
   return scores
 }
-export async function getPlayers(instance: InstanceInfo, whiteListOnly: boolean) {
+export async function getPlayers(instance: RealmInfo, whiteListOnly: boolean) {
   let resp: string
   if (whiteListOnly) {
     resp = await instance.sendRconCommand('whitelist list')

@@ -33,10 +33,13 @@ export default class ExecuteCommand extends InstanceCommandBase {
   static flags: flags.Input<any> = {...InstanceCommandBase.flags}
 
   async run() {
+    if (!this.instance.isActiveInstance) {
+      this.error(`${this.instanceName} is not active`)
+    }
     const {mccommand} = this.args
     const fullCommand = this.argv.slice(1).join(' ')
 
-    let response = await this.instance.sendRconCommand(fullCommand)
+    let response = await this.instance.realm.sendRconCommand(fullCommand)
     response = response.trim()
     this.info(`command sent: ${fullCommand}`)
     let isError = false

@@ -3,8 +3,8 @@ import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import shell from 'shelljs'
 import {InstanceCommandBase} from '../command-base'
-import {InstanceInfo, InstanceStatus} from '../instance/instance-info'
-import {LocalInstance} from '../instance/local-instance'
+import {RealmInfo, RealmStatus} from '../realm/realm-info'
+import {LocalRealm} from '../realm/local-realm'
 
 export default class StatusCommand extends InstanceCommandBase {
   static allowWithAll = true
@@ -12,6 +12,7 @@ export default class StatusCommand extends InstanceCommandBase {
 
   static examples = [
     '$ mc status uhc',
+    '$ mc status --realm=uhc',
   ]
 
   static args: Parser.args.IArg<any>[] = [
@@ -22,18 +23,20 @@ export default class StatusCommand extends InstanceCommandBase {
     ...InstanceCommandBase.flags,
   }
 
-  // eslint-disable-next-line require-await
   async run() {
-    this.console(this.instanceName)
-    const status = await this.instance.status()
-    if (status === 'running' || status === 'starting') {
-      this.success(`Service: ${status}`)
+    const state = await this.instance.realm.getState()
+    if (this.instance.isActiveInstance) {
+      this.success(`Active Instance: ${state.activeInstance}`)
     } else {
-      this.danger(`Service: ${status}`)
+      this.danger(`Active Instance: ${state.activeInstance}`)
+      return
     }
-
-    const rconConnected = await this.instance.isReady()
-    if (rconConnected) {
+    if (state.status === 'running' || state.status === 'starting') {
+      this.success(`Server: ${state.status}`)
+    } else {
+      this.danger(`Server: ${state.status}`)
+    }
+    if (state.isRconReady) {
       this.success('Rcon: online')
     } else {
       this.danger('Rcon: offline')
