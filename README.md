@@ -19,7 +19,7 @@ $ npm install -g @ambitioncraft/cli
 $ mc COMMAND
 running command...
 $ mc (-v|--version|version)
-@ambitioncraft/cli/0.1.5 linux-x64 node-v13.14.0
+@ambitioncraft/cli/0.2.0 linux-x64 node-v13.14.0
 $ mc --help [COMMAND]
 USAGE
   $ mc COMMAND
@@ -29,7 +29,6 @@ USAGE
 # Commands
 <!-- commands -->
 * [`mc execute INSTANCENAME MCCOMMAND`](#mc-execute-instancename-mccommand)
-* [`mc hello INSTANCENAME`](#mc-hello-instancename)
 * [`mc help [COMMAND]`](#mc-help-command)
 * [`mc list INSTANCENAME`](#mc-list-instancename)
 * [`mc make-server NAME`](#mc-make-server-name)
@@ -38,7 +37,7 @@ USAGE
 * [`mc mspt INSTANCENAME`](#mc-mspt-instancename)
 * [`mc scoreboard INSTANCENAME OBJECTIVE`](#mc-scoreboard-instancename-objective)
 * [`mc start INSTANCENAME`](#mc-start-instancename)
-* [`mc status INSTANCENAME`](#mc-status-instancename)
+* [`mc status [SERVER]`](#mc-status-server)
 * [`mc stop INSTANCENAME`](#mc-stop-instancename)
 
 ## `mc execute INSTANCENAME MCCOMMAND`
@@ -64,24 +63,7 @@ EXAMPLES
   $ mc run give ilmango minecraft:stone_axe
 ```
 
-_See code: [src/commands/execute.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/execute.ts)_
-
-## `mc hello INSTANCENAME`
-
-description of this example command
-
-```
-USAGE
-  $ mc hello INSTANCENAME
-
-ARGUMENTS
-  INSTANCENAME  Name of the server instance
-
-OPTIONS
-  -h, --help  display command help
-```
-
-_See code: [src/commands/hello.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/hello.ts)_
+_See code: [src/commands/execute.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/execute.ts)_
 
 ## `mc help [COMMAND]`
 
@@ -119,7 +101,7 @@ EXAMPLES
   $ mc list east.uhc
 ```
 
-_See code: [src/commands/list.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/list.ts)_
+_See code: [src/commands/list.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/list.ts)_
 
 ## `mc make-server NAME`
 
@@ -145,7 +127,7 @@ EXAMPLES
   $ mc mkserver uhc --image=1.16.2
 ```
 
-_See code: [src/commands/make-server.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/make-server.ts)_
+_See code: [src/commands/make-server.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/make-server.ts)_
 
 ## `mc make-world INSTANCENAME WORLDNAME`
 
@@ -175,7 +157,7 @@ EXAMPLES
   $ mc mkworld speedrun setseedworld -tr
 ```
 
-_See code: [src/commands/make-world.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/make-world.ts)_
+_See code: [src/commands/make-world.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/make-world.ts)_
 
 ## `mc mcprop INSTANCENAME`
 
@@ -195,7 +177,7 @@ EXAMPLE
   $ mc mcprop uhc level-name="my world"
 ```
 
-_See code: [src/commands/mcprop.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/mcprop.ts)_
+_See code: [src/commands/mcprop.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/mcprop.ts)_
 
 ## `mc mspt INSTANCENAME`
 
@@ -215,7 +197,7 @@ EXAMPLE
   $ mc mspt uhc
 ```
 
-_See code: [src/commands/mspt.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/mspt.ts)_
+_See code: [src/commands/mspt.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/mspt.ts)_
 
 ## `mc scoreboard INSTANCENAME OBJECTIVE`
 
@@ -242,7 +224,7 @@ EXAMPLES
   $ mc sb uhc deaths -w
 ```
 
-_See code: [src/commands/scoreboard.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/scoreboard.ts)_
+_See code: [src/commands/scoreboard.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/scoreboard.ts)_
 
 ## `mc start INSTANCENAME`
 
@@ -263,18 +245,18 @@ EXAMPLES
   $ mc start paper --realm=uhc
 ```
 
-_See code: [src/commands/start.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/start.ts)_
+_See code: [src/commands/start.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/start.ts)_
 
-## `mc status INSTANCENAME`
+## `mc status [SERVER]`
 
 see the status of a server instance
 
 ```
 USAGE
-  $ mc status INSTANCENAME
+  $ mc status [SERVER]
 
 ARGUMENTS
-  INSTANCENAME  Name of the server instance
+  SERVER  Name of the server
 
 OPTIONS
   -h, --help  display command help
@@ -284,7 +266,7 @@ EXAMPLES
   $ mc status --realm=uhc
 ```
 
-_See code: [src/commands/status.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/status.ts)_
+_See code: [src/commands/status.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/status.ts)_
 
 ## `mc stop INSTANCENAME`
 
@@ -305,5 +287,5 @@ EXAMPLES
   $ mc stop --realm=uhc
 ```
 
-_See code: [src/commands/stop.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.1.5/src/commands/stop.ts)_
+_See code: [src/commands/stop.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/stop.ts)_
 <!-- commandsstop -->

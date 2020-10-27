@@ -26,8 +26,11 @@
       "request": "launch",
       "program": "${workspaceFolder}/bin/run",
       "args": [
-        "start",
-        "tnt.speedrun"
+        "execute",
+        "speedrun",
+        "op",
+        "willowsticks",
+        "--realm=tnt"
       ],
       // "args": [
       //   "mkworld",

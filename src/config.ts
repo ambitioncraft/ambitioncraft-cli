@@ -3,7 +3,7 @@ export interface CliConfig {
   instanceAliases: { [key: string]: string };
   mcService: string;
   realms: {[key: string]: LocalRealmConfig | RemoteRealmConfig };
-  remoteServers: RemoteServer[];
+  // remoteServers: RemoteServer[];
 }
 
 export type LocalRealmConfig = {
@@ -25,14 +25,14 @@ export type Directories = {
   scripts: string;
 }
 
-export type RemoteServer = {
-  panelUrl: string;
-  name: string;
-  host: string;
-  uuid: string;
-  userApiKey: string;
-  serverPort: number;
-  rconPass: string;
-  rconPort: number;
-}
+// export type RemoteServer = {
+//   panelUrl: string;
+//   name: string;
+//   host: string;
+//   uuid: string;
+//   userApiKey: string;
+//   serverPort: number;
+//   rconPass: string;
+//   rconPort: number;
+// }
 

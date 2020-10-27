@@ -37,7 +37,7 @@ export default class ExecuteCommand extends InstanceCommandBase {
       this.error(`${this.instanceName} is not active`)
     }
     const {mccommand} = this.args
-    const fullCommand = this.argv.slice(1).join(' ')
+    const fullCommand = this.argv.slice(1).filter(x => !x.startsWith('--realm')).join(' ')
 
     let response = await this.instance.realm.sendRconCommand(fullCommand)
     response = response.trim()
