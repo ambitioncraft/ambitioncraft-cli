@@ -54,9 +54,9 @@ export default class StatusCommand extends McCommand {
     this.info('---Instances---')
     state.allInstances.sort().forEach(instance => {
       if (instance === state.activeInstance) {
-        this.info(`${instance}: '✓ active`)
+        this.info(`${instance}: ✓ active`)
       } else {
-        this.info(`${instance}`)
+        this.info(`${instance}:`)
       }
     })
     if (state.isRconReady) {
