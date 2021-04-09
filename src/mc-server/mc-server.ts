@@ -1,29 +1,38 @@
 import {Rcon} from 'rcon-client'
-import {Instance} from '../instance/instance'
 import {MinecraftProperties} from '../utils/minecraft'
 
-export interface RealmSettings {
+export interface McServerSettings {
   name: string;
   host: string;
   port: number;
   rconPort: number;
   rconPass: string;
+    worldDir: string | undefined;
+  backupDir: string | undefined;
 }
 
-export abstract class RealmInfo {
+export abstract class McServer {
   name: string
   port: number
   rconPort: number
   rconPass: string
   host: string
   rcon: Rcon | undefined
+  worldDir: string | undefined
+  backupDir: string | undefined
 
-  constructor({name, host, port, rconPort, rconPass}: RealmSettings) {
+  public get isLocal(): boolean {
+    return this.worldDir !== undefined && this.worldDir.length > 1
+  }
+
+  constructor({name, host, port, rconPort, rconPass, worldDir, backupDir}: McServerSettings) {
     this.name = name
     this.port = port
     this.rconPort = rconPort
     this.rconPass = rconPass
     this.host = host
+    this.worldDir = worldDir
+    this.backupDir = backupDir
   }
 
   protected async getRcon() {
@@ -59,42 +68,20 @@ export abstract class RealmInfo {
     return status !== 'offline'
   }
 
-  async getInstance(instanceName: string) {
-    // handle blank instance names, which would just be root single instances
-    const instances = await this.getAllInstances()
-    const activeInstance = await this.getActiveInstance()
-    if (instances.includes(instanceName)) {
-      const path = `instances/${instanceName}`
-      const isActiveInstance = activeInstance === instanceName
-      return new Instance(instanceName, path, isActiveInstance, this)
-    }
-  }
-
   async getState() {
     const status = await this.status()
     const isRconReady = await this.isRconReady()
-    const activeInstance = await this.getActiveInstance()
-    const allInstances = await this.getAllInstances()
     return {
       status,
       isRconReady,
-      activeInstance,
-      allInstances,
     }
-  }
-
-  async getAllInstances() {
-    return await this.getDirListing('/instances/')
   }
 
   abstract getMinecraftProperties(instanceDir: string): Promise<MinecraftProperties>
   abstract setMinecraftProperties(props: MinecraftProperties, instanceDir: string): Promise<void>
-  abstract getActiveInstance(): Promise<string>
-  abstract setActiveInstance(name: string): Promise<void>
-
   abstract start(): Promise<void>
   abstract stop(): Promise<void>
-  abstract status(): Promise<RealmStatus>
+  abstract status(): Promise<ServerStatus>
   abstract getDirListing(path: string): Promise<string[]>
 }
 
@@ -104,11 +91,11 @@ function strEnum<T extends string>(o: Array<T>): { [K in T]: K } {
     return res
   }, Object.create(null))
 }
-export const RealmStatus = strEnum([
+export const ServerStatus = strEnum([
   'unknown',
   'running',
   'starting',
   'stopping',
   'offline',
 ])
-export type RealmStatus = keyof typeof RealmStatus
+export type ServerStatus = keyof typeof ServerStatus

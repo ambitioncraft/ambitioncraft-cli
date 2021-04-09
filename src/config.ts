@@ -1,38 +1,28 @@
 export interface CliConfig {
-  directories: Directories;
-  instanceAliases: { [key: string]: string };
-  mcService: string;
-  realms: {[key: string]: LocalRealmConfig | RemoteRealmConfig };
-  // remoteServers: RemoteServer[];
+  servers: {[key: string]: PterodactylConfig };
+  discord: DiscordConfig;
 }
 
-export type LocalRealmConfig = {
-  provider: 'local';
-  path: string;
-}
-
-export type RemoteRealmConfig = {
+export type PterodactylConfig = {
   provider: 'pterodactyl';
   panelUrl: string;
   host: string;
   uuid: string;
   userApiKey: string;
+  worldDir: string | undefined;
+  backupDir: string | undefined;
 }
 
-export type Directories = {
-  images: string;
-  instances: string;
-  scripts: string;
+export type DiscordConfig = {
+  channels: { [key: string]: string };
+  commandPrefix: string;
+  token: string;
+  permissions: {
+    [role: string]: {
+      commands: string[];
+    };
+    '*': {
+      commands: string[];
+    };
+  };
 }
-
-// export type RemoteServer = {
-//   panelUrl: string;
-//   name: string;
-//   host: string;
-//   uuid: string;
-//   userApiKey: string;
-//   serverPort: number;
-//   rconPass: string;
-//   rconPort: number;
-// }
-

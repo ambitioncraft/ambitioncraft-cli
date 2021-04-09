@@ -1,10 +1,10 @@
-import {CliConfig} from './config'
+import {CliConfig} from '../config'
 import {Config, IConfig, load} from '@oclif/config'
 import {EventEmitter} from 'events'
 
 import readline from 'readline'
-import CommandContext from './command-context'
-import store from './store'
+import CommandContext from '../core/command-context'
+import store from '../core/store'
 
 export abstract class CommandClientBase extends EventEmitter {
   commandConfig!: Config | IConfig;
@@ -20,7 +20,7 @@ export abstract class CommandClientBase extends EventEmitter {
     cb.apply(this)
   }
 
-  protected abstract async onStart(): Promise<void>
+  protected abstract onStart(): Promise<void>
   stop() {
     this.emit('close')
   }
@@ -42,6 +42,7 @@ export class ConsoleCommandClient extends CommandClientBase {
     if (line.startsWith('.')) {
       const args = lineToArgs(line.substr(1))
       const context = new CommandContext(args)
+      context.commandPrefix = '!'
       await context.executeCommand(this.commandConfig)
     }
   }

@@ -1,8 +1,7 @@
 import Path from 'path'
 import {Rcon} from 'rcon-client'
-import store from '../store'
+import store from '../core/store'
 
-import {RealmInfo, RealmSettings, RealmStatus} from './realm-info'
 import PanelUserClient, {AxiosInstance} from '../panel/user-client/client'
 import getServerResourceUsage from '../panel/user-client/server/getServerResourceUsage'
 import sendPowerState from '../panel/user-client/server/sendPowerState'
@@ -11,15 +10,17 @@ import * as utils from '../utils'
 import getFileContents from '../panel/user-client/server/files/getFileContents'
 import saveFileContents from '../panel/user-client/server/files/saveFileContents'
 import loadDirectory from '../panel/user-client/server/files/loadDirectory'
-import {RemoteRealmConfig} from '../config'
+import {PterodactylConfig} from '../config'
+import {McServer, McServerSettings, ServerStatus} from './mc-server'
 
-export interface RemoteRealmSettings extends RealmSettings {
+export interface PterodactylMcServerSettings extends McServerSettings {
   uuid: string;
+
 }
 
-export class RemoteRealm extends RealmInfo {
+export class PterodactylServer extends McServer {
   client: PanelUserClient
-  config: RemoteRealmSettings
+  config: PterodactylMcServerSettings
 
   public get uuid(): string {
     return this.config.uuid
@@ -29,24 +30,26 @@ export class RemoteRealm extends RealmInfo {
     return this.client.http
   }
 
-  constructor(client: PanelUserClient, config: RemoteRealmSettings) {
+  constructor(client: PanelUserClient, config: PterodactylMcServerSettings) {
     super(config)
     this.client = client
     this.config = config
   }
 
-  static async createFromConfig(name: string, config: RemoteRealmConfig): Promise<RealmInfo | undefined> {
+  static async createFromConfig(name: string, config: PterodactylConfig): Promise<McServer | undefined> {
     // create the client
     const client = await PanelUserClient.create(config.panelUrl, config.userApiKey)
-    const text = await getFileContents(client.http, config.uuid, 'global.properties')
+    const text = await getFileContents(client.http, config.uuid, 'server.properties')
     const props = utils.minecraft.parseServerProperties(text)
-    return new RemoteRealm(client, {
+    return new PterodactylServer(client, {
       host: config.host,
       name: name,
       port: props['server-port'],
       rconPort: props['rcon.port'],
       rconPass: props['rcon.password'] || '',
       uuid: config.uuid,
+      worldDir: config.worldDir,
+      backupDir: config.backupDir,
     })
   }
 
@@ -62,21 +65,12 @@ export class RemoteRealm extends RealmInfo {
     await saveFileContents(this.http, this.uuid, file, text)
   }
 
-  async isRconReady() {
-    const status = await this.status()
-    return status === 'running'
-  }
+  // async isRconReady() {
+  //   const status = await this.status()
+  //   return status === 'running'
+  // }
 
-  async setActiveInstance(name: string): Promise<void> {
-    await saveFileContents(this.http, this.uuid, 'active_instance.txt', name)
-  }
-
-  async getActiveInstance(): Promise<string> {
-    const activeInstance = await getFileContents(this.http, this.uuid, 'active_instance.txt')
-    return activeInstance.trim()
-  }
-
-  async status(): Promise<RealmStatus> {
+  async status(): Promise<ServerStatus> {
     const state = await getServerResourceUsage(this.http, this.uuid)
     return state.status
   }

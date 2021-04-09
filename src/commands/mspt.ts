@@ -1,26 +1,23 @@
 
 import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
-import {InstanceCommandBase} from '../command-base'
-import {Colors} from '../command-response'
-import {RealmInfo, RealmStatus} from '../realm/realm-info'
+import {InstanceCommandBase} from '../core/command-base'
+import {Colors} from '../core/command-response'
+import {McServer} from '../mc-server/mc-server'
 
 export default class MsptCommand extends InstanceCommandBase {
   static allowWithAll = true
   static description = 'get the mspt of a server'
   static alias = ['tps']
   static examples = [
-    '$ mc mspt uhc',
+    '!mspt cmp',
   ]
 
   static flags: flags.Input<any> = {...InstanceCommandBase.flags}
   static args: Parser.args.IArg<any>[] = [...InstanceCommandBase.args]
 
   async run() {
-    if (!this.instance.isActiveInstance) {
-      this.error(`${this.instanceName} is not active`)
-    }
-    const {tps, mspt} = await queryMSPT(this.instance.realm)
+    const {tps, mspt} = await queryMSPT(this.instance)
     const text = `TPS: ${tps.toFixed(1)} MSPT: ${mspt.toFixed(1)}`
 
     if (mspt >= 50) {
@@ -33,7 +30,7 @@ export default class MsptCommand extends InstanceCommandBase {
   }
 }
 
-export async function queryMSPT(instance: RealmInfo) {
+export async function queryMSPT(instance: McServer) {
   const data = await instance.sendRconCommand('script run reduce(last_tick_times(),_a+_,0)/100;')
   const mspt = parseFloat(data.split(' ')[2])
   let tps

@@ -1,11 +1,10 @@
 
 import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
-import shell from 'shelljs'
-import {InstanceCommandBase, McCommand} from '../command-base'
-import {RealmInfo, RealmStatus} from '../realm/realm-info'
-import {LocalRealm} from '../realm/local-realm'
-import store from '../store'
+import {InstanceCommandBase, McCommand} from '../core/command-base'
+import {McServer} from '../mc-server/mc-server'
+
+import store from '../core/store'
 
 export default class StatusCommand extends McCommand {
   static allowWithAll = true
@@ -24,14 +23,14 @@ export default class StatusCommand extends McCommand {
     ...InstanceCommandBase.flags,
   }
 
-  server!: RealmInfo
+  server!: McServer
   async init() {
     const {flags, args} = this.parse(this.constructor as any)
     this.flags = flags
     this.args = args
 
     const serverName = this.flags.realm || this.args.server.split('.')[0]
-    const server = await store.getRealm(serverName)
+    const server = await store.getMcServer(serverName)
     if (!server) {
       this.error(`Server: ${serverName} not found.`)
     }
@@ -51,14 +50,6 @@ export default class StatusCommand extends McCommand {
       this.danger('Rcon: offline')
     }
     this.info('')
-    this.info('---Instances---')
-    state.allInstances.sort().forEach(instance => {
-      if (instance === state.activeInstance) {
-        this.info(`${instance}: '✓ active`)
-      } else {
-        this.info(`${instance}`)
-      }
-    })
     if (state.isRconReady) {
       const list = await this.server.sendRconCommand('list')
       this.info('')

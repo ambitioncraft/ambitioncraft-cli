@@ -19,7 +19,7 @@ $ npm install -g @ambitioncraft/cli
 $ mc COMMAND
 running command...
 $ mc (-v|--version|version)
-@ambitioncraft/cli/0.2.0 linux-x64 node-v13.14.0
+@ambitioncraft/cli/0.3.0 linux-x64 node-v13.14.0
 $ mc --help [COMMAND]
 USAGE
   $ mc COMMAND
@@ -28,29 +28,52 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`mc execute INSTANCENAME MCCOMMAND`](#mc-execute-instancename-mccommand)
+* [`mc backup SERVER`](#mc-backup-server)
+* [`mc execute SERVER MCCOMMAND`](#mc-execute-server-mccommand)
 * [`mc help [COMMAND]`](#mc-help-command)
-* [`mc list INSTANCENAME`](#mc-list-instancename)
-* [`mc make-server NAME`](#mc-make-server-name)
-* [`mc make-world INSTANCENAME WORLDNAME`](#mc-make-world-instancename-worldname)
-* [`mc mcprop INSTANCENAME`](#mc-mcprop-instancename)
-* [`mc mspt INSTANCENAME`](#mc-mspt-instancename)
-* [`mc scoreboard INSTANCENAME OBJECTIVE`](#mc-scoreboard-instancename-objective)
-* [`mc start INSTANCENAME`](#mc-start-instancename)
+* [`mc list SERVER`](#mc-list-server)
+* [`mc mspt SERVER`](#mc-mspt-server)
+* [`mc scoreboard SERVER OBJECTIVE`](#mc-scoreboard-server-objective)
+* [`mc start SERVER`](#mc-start-server)
 * [`mc status [SERVER]`](#mc-status-server)
-* [`mc stop INSTANCENAME`](#mc-stop-instancename)
+* [`mc stop SERVER`](#mc-stop-server)
 
-## `mc execute INSTANCENAME MCCOMMAND`
+## `mc backup SERVER`
+
+Backup individual regions
+
+```
+USAGE
+  $ mc backup SERVER
+
+ARGUMENTS
+  SERVER  Name of the server (smp, cmp, copy)
+
+OPTIONS
+  -e, --end=end              end region
+  -h, --help                 display command help
+  -n, --nether=nether        nether region
+  -o, --overworld=overworld  overworld region
+
+EXAMPLES
+  !backup -o=1.1
+  !backup -o=0.1 -o=-1.1
+  !backup -o=0.1 -n=0.0
+```
+
+_See code: [src/commands/backup.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/backup.ts)_
+
+## `mc execute SERVER MCCOMMAND`
 
 Execute a command using rcon
 
 ```
 USAGE
-  $ mc execute INSTANCENAME MCCOMMAND
+  $ mc execute SERVER MCCOMMAND
 
 ARGUMENTS
-  INSTANCENAME  Name of the server instance
-  MCCOMMAND     Minecraft command to execute
+  SERVER     Name of the server (smp, cmp, copy)
+  MCCOMMAND  Minecraft command to execute
 
 OPTIONS
   -h, --help  display command help
@@ -59,11 +82,11 @@ ALIASES
   $ mc run
 
 EXAMPLES
-  $ mc execute uhc whitelist add ilmango
-  $ mc run give ilmango minecraft:stone_axe
+  !execute cmp whitelist add ilmango
+  !run copy give ilmango minecraft:stone_axe
 ```
 
-_See code: [src/commands/execute.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/execute.ts)_
+_See code: [src/commands/execute.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/execute.ts)_
 
 ## `mc help [COMMAND]`
 
@@ -82,134 +105,57 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
 
-## `mc list INSTANCENAME`
+## `mc list SERVER`
 
 list all players on a server
 
 ```
 USAGE
-  $ mc list INSTANCENAME
+  $ mc list SERVER
 
 ARGUMENTS
-  INSTANCENAME  Name of the server instance
-
-OPTIONS
-  -h, --help  display command help
-
-EXAMPLES
-  $ mc list uhc --realm=east
-  $ mc list east.uhc
-```
-
-_See code: [src/commands/list.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/list.ts)_
-
-## `mc make-server NAME`
-
-Create a new Minecraft server instance.
-
-```
-USAGE
-  $ mc make-server NAME
-
-ARGUMENTS
-  NAME  Name of the server instance. Must be lowercase and contain only letters, numbers, underscore, and hypens.
-
-OPTIONS
-  -h, --help         display command help
-  -i, --image=image  (required) Minecraft Image Name (1.16.1, paper_1.16.3, ...)
-
-ALIASES
-  $ mc mkserver
-
-EXAMPLES
-  $ mc make-server
-  $ mc make-server uhc
-  $ mc mkserver uhc --image=1.16.2
-```
-
-_See code: [src/commands/make-server.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/make-server.ts)_
-
-## `mc make-world INSTANCENAME WORLDNAME`
-
-Create a new world on the same server.
-
-```
-USAGE
-  $ mc make-world INSTANCENAME WORLDNAME
-
-ARGUMENTS
-  INSTANCENAME  Name of the server instance
-  WORLDNAME     Name of the new world
-
-OPTIONS
-  -h, --help       display command help
-  -r, --remake     remake the current world. This can only be done if the world was flagged as temporary
-  -s, --seed=seed  seed of new world
-  -t, --temp       helper to indicate this world is only temporary
-
-ALIASES
-  $ mc mkworld
-
-EXAMPLES
-  $ mc make-world uhc MyWorld --seed=19094829123
-  $ mc make-world speedrun setseedworld --temp
-  $ mc make-world speedrun setseedworld --temp --remake
-  $ mc mkworld speedrun setseedworld -tr
-```
-
-_See code: [src/commands/make-world.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/make-world.ts)_
-
-## `mc mcprop INSTANCENAME`
-
-change a setting in minecraft.properties
-
-```
-USAGE
-  $ mc mcprop INSTANCENAME
-
-ARGUMENTS
-  INSTANCENAME  Name of the server instance
+  SERVER  Name of the server (smp, cmp, copy)
 
 OPTIONS
   -h, --help  display command help
 
 EXAMPLE
-  $ mc mcprop uhc level-name="my world"
+  !list cmp
 ```
 
-_See code: [src/commands/mcprop.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/mcprop.ts)_
+_See code: [src/commands/list.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/list.ts)_
 
-## `mc mspt INSTANCENAME`
+## `mc mspt SERVER`
 
 get the mspt of a server
 
 ```
 USAGE
-  $ mc mspt INSTANCENAME
+  $ mc mspt SERVER
 
 ARGUMENTS
-  INSTANCENAME  Name of the server instance
+  SERVER  Name of the server (smp, cmp, copy)
 
 OPTIONS
   -h, --help  display command help
 
 EXAMPLE
-  $ mc mspt uhc
+  !mspt cmp
 ```
 
-_See code: [src/commands/mspt.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/mspt.ts)_
+_See code: [src/commands/mspt.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/mspt.ts)_
 
-## `mc scoreboard INSTANCENAME OBJECTIVE`
+## `mc scoreboard SERVER OBJECTIVE`
 
-displays the scoreboard associated to a specific objective
+displays a scoreboard
 
 ```
 USAGE
-  $ mc scoreboard INSTANCENAME OBJECTIVE
+  $ mc scoreboard SERVER OBJECTIVE
 
 ARGUMENTS
-  INSTANCENAME  Name of the server instance
-  OBJECTIVE     name of the scoreboard objective
+  SERVER     Name of the server (smp, cmp, copy)
+  OBJECTIVE  name of the scoreboard objective
 
 OPTIONS
   -h, --help       display command help
@@ -224,18 +170,18 @@ EXAMPLES
   $ mc sb uhc deaths -w
 ```
 
-_See code: [src/commands/scoreboard.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/scoreboard.ts)_
+_See code: [src/commands/scoreboard.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/scoreboard.ts)_
 
-## `mc start INSTANCENAME`
+## `mc start SERVER`
 
 start a server instance
 
 ```
 USAGE
-  $ mc start INSTANCENAME
+  $ mc start SERVER
 
 ARGUMENTS
-  INSTANCENAME  Name of the server instance
+  SERVER  Name of the server (smp, cmp, copy)
 
 OPTIONS
   -h, --help  display command help
@@ -245,7 +191,7 @@ EXAMPLES
   $ mc start paper --realm=uhc
 ```
 
-_See code: [src/commands/start.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/start.ts)_
+_See code: [src/commands/start.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/start.ts)_
 
 ## `mc status [SERVER]`
 
@@ -266,26 +212,26 @@ EXAMPLES
   $ mc status --realm=uhc
 ```
 
-_See code: [src/commands/status.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/status.ts)_
+_See code: [src/commands/status.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/status.ts)_
 
-## `mc stop INSTANCENAME`
+## `mc stop SERVER`
 
 stop a server instance
 
 ```
 USAGE
-  $ mc stop INSTANCENAME
+  $ mc stop SERVER
 
 ARGUMENTS
-  INSTANCENAME  Name of the server instance
+  SERVER  Name of the server (smp, cmp, copy)
 
 OPTIONS
   -h, --help  display command help
 
 EXAMPLES
-  $ mc stop uhc
-  $ mc stop --realm=uhc
+  $!stop uhc
+  $!stop --realm=uhc
 ```
 
-_See code: [src/commands/stop.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.2.0/src/commands/stop.ts)_
+_See code: [src/commands/stop.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/stop.ts)_
 <!-- commandsstop -->

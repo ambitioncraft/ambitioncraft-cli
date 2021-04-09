@@ -1,6 +1,6 @@
 {
   "name": "@ambitioncraft/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "Matt Overall @MatthewOverall",
   "contributors": [
     "Nick Danut (https://github.com/ZzirGrizzyExo/)"
@@ -57,7 +57,8 @@
     "inquirer": "^7.3.3",
     "rcon-client": "^4.2.3",
     "shelljs": "^0.8.4",
-    "strip-ansi": "^6.0.0"
+    "strip-ansi": "^6.0.0",
+    "discord.js": "12.5.3"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
@@ -67,6 +68,7 @@
     "@types/mocha": "^5.2.7",
     "@types/node": "^10.17.37",
     "@types/shelljs": "^0.8.8",
+    "@types/ws": "^7.2.7",
     "eslint": "^5.16.0",
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-oclif-typescript": "^0.1.0",

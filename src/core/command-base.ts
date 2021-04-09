@@ -4,7 +4,8 @@ import {PrettyPrintableError} from '@oclif/errors'
 import * as Parser from '@oclif/parser'
 import CommandContext from './command-context'
 import CommandResponse from './command-response'
-import {Instance} from './instance/instance'
+import {McServer} from '../mc-server/mc-server'
+
 import store from './store'
 
 export abstract class McCommand extends Command {
@@ -100,40 +101,23 @@ export abstract class McCommand extends Command {
 export abstract class InstanceCommandBase extends McCommand {
   /** Allow this method to run with the realm --all command */
   static allowWithAll = false // do not change this here, change this on the child class
-  static instanceArg = {name: 'instanceName', required: true, description: 'Name of the server instance'}
+  static instanceArg = {name: 'server', required: true, description: 'Name of the server (smp, cmp, copy)'}
   static args: Parser.args.IArg<any>[] = [InstanceCommandBase.instanceArg]
-  static realmFlag = {realm: flags.string({description: 'realm', hidden: true})}
-  static flags: flags.Input<any> = {...InstanceCommandBase.realmFlag, ...McCommand.flags}
-  instance!: Instance
+  instance!: McServer
 
   public get instanceName(): string {
-    return this.instance.fullName
+    return this.instance.name
   }
 
   async init() {
     await super.init()
-    let realmName = ''
-    let subInstance = ''
-    const split = this.args.instanceName.split('.')
-
-    if (this.flags.realm) {
-      realmName = this.flags.realm
-      subInstance = split[1] || split[0]
-    } else {
-      realmName = split[0]
-      subInstance = split[1]
-    }
-
-    if (!realmName) {
+    const name = this.args.server
+    if (!name) {
       this.error('Server not specified')
     }
-    const realm = await store.getRealm(realmName)
-    if (!realm) {
-      this.error(`Server: ${realmName} not found.`)
-    }
-    const instance = await realm.getInstance(subInstance)
+    const instance = await store.getMcServer(name)
     if (!instance) {
-      this.error(`Instance ${realmName}.${subInstance} not found`)
+      this.error(`Server ${name} does not exist.`)
     }
     this.instance = instance
   }
