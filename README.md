@@ -19,7 +19,7 @@ $ npm install -g @ambitioncraft/cli
 $ mc COMMAND
 running command...
 $ mc (-v|--version|version)
-@ambitioncraft/cli/0.3.0 linux-x64 node-v13.14.0
+@ambitioncraft/cli/0.3.0 linux-x64 node-v14.16.1
 $ mc --help [COMMAND]
 USAGE
   $ mc COMMAND
@@ -29,6 +29,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`mc backup SERVER`](#mc-backup-server)
+* [`mc download SERVER`](#mc-download-server)
 * [`mc execute SERVER MCCOMMAND`](#mc-execute-server-mccommand)
 * [`mc help [COMMAND]`](#mc-help-command)
 * [`mc list SERVER`](#mc-list-server)
@@ -62,6 +63,34 @@ EXAMPLES
 ```
 
 _See code: [src/commands/backup.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/backup.ts)_
+
+## `mc download SERVER`
+
+Download individual regions
+
+```
+USAGE
+  $ mc download SERVER
+
+ARGUMENTS
+  SERVER  Name of the server (smp, cmp, copy)
+
+OPTIONS
+  -e, --end=end              end region
+  -h, --help                 display command help
+  -n, --nether=nether        nether region
+  -o, --overworld=overworld  overworld region
+
+ALIASES
+  $ mc dl
+
+EXAMPLES
+  !dl -o=1.1
+  !dl -o=0.1 -o=-1.1
+  !dl -o=0.1 -n=0.0
+```
+
+_See code: [src/commands/download.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/download.ts)_
 
 ## `mc execute SERVER MCCOMMAND`
 
