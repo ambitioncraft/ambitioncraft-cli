@@ -1,4 +1,5 @@
 import {Rcon} from 'rcon-client'
+import store from '../core/store'
 import {MinecraftProperties} from '../utils/minecraft'
 
 export interface McServerSettings {
@@ -7,11 +8,13 @@ export interface McServerSettings {
   port: number;
   rconPort: number;
   rconPass: string;
-    worldDir: string | undefined;
+  worldDir: string | undefined;
   backupDir: string | undefined;
+  mirrorServer: string | undefined
 }
 
 export abstract class McServer {
+ 
   name: string
   port: number
   rconPort: number
@@ -20,12 +23,13 @@ export abstract class McServer {
   rcon: Rcon | undefined
   worldDir: string | undefined
   backupDir: string | undefined
+  mirrorServer: string | undefined
 
   public get isLocal(): boolean {
     return this.worldDir !== undefined && this.worldDir.length > 1
   }
 
-  constructor({name, host, port, rconPort, rconPass, worldDir, backupDir}: McServerSettings) {
+  constructor({name, host, port, rconPort, rconPass, worldDir, backupDir, mirrorServer}: McServerSettings) {
     this.name = name
     this.port = port
     this.rconPort = rconPort
@@ -33,6 +37,7 @@ export abstract class McServer {
     this.host = host
     this.worldDir = worldDir
     this.backupDir = backupDir
+    this.mirrorServer = mirrorServer
   }
 
   protected async getRcon() {
@@ -81,8 +86,16 @@ export abstract class McServer {
   abstract setMinecraftProperties(props: MinecraftProperties, instanceDir: string): Promise<void>
   abstract start(): Promise<void>
   abstract stop(): Promise<void>
+  abstract uploadFile(path:string, contents:any): Promise<void>
+  abstract renameFiles(root: string, from:string, to: string) : Promise<void>
   abstract status(): Promise<ServerStatus>
   abstract getDirListing(path: string): Promise<string[]>
+
+  async getMirrorInstance(){
+    if(this.mirrorServer){
+      return await store.getMcServer(this.mirrorServer)
+    }
+  }
 }
 
 function strEnum<T extends string>(o: Array<T>): { [K in T]: K } {

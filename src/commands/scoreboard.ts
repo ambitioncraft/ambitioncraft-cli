@@ -10,9 +10,9 @@ export default class ScoreboardCommand extends InstanceCommandBase {
   static description = 'displays a scoreboard'
 
   static examples = [
-    '$ mc scoreboard uhc deaths',
-    '$ mc sb uhc deaths --whitelist',
-    '$ mc sb uhc deaths -w',
+    'scoreboard smp deaths',
+    'sb copy deaths --allplayers',
+    'sb uhc deaths -a',
   ]
 
   static args: Parser.args.IArg<any>[] = [
@@ -22,14 +22,14 @@ export default class ScoreboardCommand extends InstanceCommandBase {
 
   static flags: flags.Input<any> = {
     ...InstanceCommandBase.flags,
-    whitelist: flags.boolean({char: 'w', description: 'only show whitelisted players'}),
+    allplayers: flags.boolean({char: 'a', description: 'Include all players (not just whitelisted)'}),
   }
 
   async run() {
     const {objective} = this.args
-    const {whitelist} = this.flags
-
-    const scores = await getScores(this.instance, objective, whitelist)
+    const {allplayers} = this.flags
+    const whiteListOnly = !allplayers
+    const scores = await getScores(this.instance, objective, whiteListOnly)
 
     this.response
     .setTitle(`Scoreboard: ${objective}`)

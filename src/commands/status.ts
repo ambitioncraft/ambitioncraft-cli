@@ -6,39 +6,25 @@ import {McServer} from '../mc-server/mc-server'
 
 import store from '../core/store'
 
-export default class StatusCommand extends McCommand {
+export default class StatusCommand extends InstanceCommandBase {
   static allowWithAll = true
   static description = 'see the status of a server instance'
 
   static examples = [
-    '$ mc status uhc',
-    '$ mc status --realm=uhc',
+    'status smp',
+    'status copy',
   ]
 
   static args: Parser.args.IArg<any>[] = [
-    {name: 'server', required: false, description: 'Name of the server'},
+    ...InstanceCommandBase.args,
   ]
 
   static flags: flags.Input<any> = {
     ...InstanceCommandBase.flags,
   }
-
-  server!: McServer
-  async init() {
-    const {flags, args} = this.parse(this.constructor as any)
-    this.flags = flags
-    this.args = args
-
-    const serverName = this.flags.realm || this.args.server.split('.')[0]
-    const server = await store.getMcServer(serverName)
-    if (!server) {
-      this.error(`Server: ${serverName} not found.`)
-    }
-    this.server = server
-  }
-
+  
   async run() {
-    const state = await this.server.getState()
+    const state = await this.instance.getState()
     if (state.status === 'running' || state.status === 'starting') {
       this.success(`State: ${state.status}`)
     } else {
@@ -51,7 +37,7 @@ export default class StatusCommand extends McCommand {
     }
     this.info('')
     if (state.isRconReady) {
-      const list = await this.server.sendRconCommand('list')
+      const list = await this.instance.sendRconCommand('list')
       this.info('')
       this.info(list)
     }

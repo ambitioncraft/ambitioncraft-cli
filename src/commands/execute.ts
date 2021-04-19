@@ -1,7 +1,6 @@
 import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import {InstanceCommandBase} from '../core/command-base'
-
 const invalidCommands = [
   'Incorrect argument for command',
   'Unknown or incomplete command',
@@ -16,8 +15,8 @@ export default class ExecuteCommand extends InstanceCommandBase {
   static aliases = ['run']
   static description = 'Execute a command using rcon'
   static examples = [
-    '!execute cmp whitelist add ilmango',
-    '!run copy give ilmango minecraft:stone_axe',
+    'execute cmp whitelist add ilmango',
+    'run copy give ilmango minecraft:stone_axe',
   ]
 
   static strict = false

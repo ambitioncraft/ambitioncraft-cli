@@ -11,8 +11,8 @@ export default class StartCommand extends InstanceCommandBase {
   static description = 'start a server instance'
 
   static examples = [
-    '$ mc start uhc.paper',
-    '$ mc start paper --realm=uhc',
+    'start smp',
+    'start copy',
   ]
 
   static args: Parser.args.IArg<any>[] = [

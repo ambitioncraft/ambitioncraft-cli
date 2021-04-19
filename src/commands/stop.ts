@@ -8,8 +8,8 @@ export default class StartCommand extends InstanceCommandBase {
   static description = 'stop a server instance'
 
   static examples = [
-    '$!stop uhc',
-    '$!stop --realm=uhc',
+    '$stop smp',
+    '$stop copy',
   ]
 
   static args: Parser.args.IArg<any>[] = [

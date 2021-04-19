@@ -11,6 +11,7 @@ export type PterodactylConfig = {
   userApiKey: string;
   worldDir: string | undefined;
   backupDir: string | undefined;
+  mirrorServer: string | undefined;
 }
 
 export type DiscordConfig = {

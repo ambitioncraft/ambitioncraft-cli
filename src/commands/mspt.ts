@@ -10,7 +10,7 @@ export default class MsptCommand extends InstanceCommandBase {
   static description = 'get the mspt of a server'
   static alias = ['tps']
   static examples = [
-    '!mspt cmp',
+    'mspt cmp',
   ]
 
   static flags: flags.Input<any> = {...InstanceCommandBase.flags}

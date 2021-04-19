@@ -33,10 +33,11 @@ USAGE
 * [`mc execute SERVER MCCOMMAND`](#mc-execute-server-mccommand)
 * [`mc help [COMMAND]`](#mc-help-command)
 * [`mc list SERVER`](#mc-list-server)
+* [`mc mirror SERVER`](#mc-mirror-server)
 * [`mc mspt SERVER`](#mc-mspt-server)
 * [`mc scoreboard SERVER OBJECTIVE`](#mc-scoreboard-server-objective)
 * [`mc start SERVER`](#mc-start-server)
-* [`mc status [SERVER]`](#mc-status-server)
+* [`mc status SERVER`](#mc-status-server)
 * [`mc stop SERVER`](#mc-stop-server)
 
 ## `mc backup SERVER`
@@ -57,9 +58,9 @@ OPTIONS
   -o, --overworld=overworld  overworld region
 
 EXAMPLES
-  !backup -o=1.1
-  !backup -o=0.1 -o=-1.1
-  !backup -o=0.1 -n=0.0
+  backup -o=1.1
+  backup -o=0.1 -o=-1.1
+  backup -o=0.1 -n=0.0
 ```
 
 _See code: [src/commands/backup.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/backup.ts)_
@@ -85,9 +86,9 @@ ALIASES
   $ mc dl
 
 EXAMPLES
-  !dl -o=1.1
-  !dl -o=0.1 -o=-1.1
-  !dl -o=0.1 -n=0.0
+  download -o=1.1 -o=1.2
+  dl -n=0.1
+  dl -e 0.0
 ```
 
 _See code: [src/commands/download.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/download.ts)_
@@ -111,8 +112,8 @@ ALIASES
   $ mc run
 
 EXAMPLES
-  !execute cmp whitelist add ilmango
-  !run copy give ilmango minecraft:stone_axe
+  execute cmp whitelist add ilmango
+  run copy give ilmango minecraft:stone_axe
 ```
 
 _See code: [src/commands/execute.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/execute.ts)_
@@ -149,10 +150,33 @@ OPTIONS
   -h, --help  display command help
 
 EXAMPLE
-  !list cmp
+  list cmp
 ```
 
 _See code: [src/commands/list.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/list.ts)_
+
+## `mc mirror SERVER`
+
+Mirror Regions To Copy
+
+```
+USAGE
+  $ mc mirror SERVER
+
+ARGUMENTS
+  SERVER  Name of the server (smp, cmp, copy)
+
+OPTIONS
+  -e, --end=end              end region
+  -h, --help                 display command help
+  -n, --nether=nether        nether region
+  -o, --overworld=overworld  overworld region
+
+EXAMPLE
+  mirror smp -o=1.1 -o=1.2
+```
+
+_See code: [src/commands/mirror.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/mirror.ts)_
 
 ## `mc mspt SERVER`
 
@@ -169,7 +193,7 @@ OPTIONS
   -h, --help  display command help
 
 EXAMPLE
-  !mspt cmp
+  mspt cmp
 ```
 
 _See code: [src/commands/mspt.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/mspt.ts)_
@@ -187,16 +211,16 @@ ARGUMENTS
   OBJECTIVE  name of the scoreboard objective
 
 OPTIONS
-  -h, --help       display command help
-  -w, --whitelist  only show whitelisted players
+  -a, --allplayers  Include all players (not just whitelisted)
+  -h, --help        display command help
 
 ALIASES
   $ mc sb
 
 EXAMPLES
-  $ mc scoreboard uhc deaths
-  $ mc sb uhc deaths --whitelist
-  $ mc sb uhc deaths -w
+  scoreboard smp deaths
+  sb copy deaths --allplayers
+  sb uhc deaths -a
 ```
 
 _See code: [src/commands/scoreboard.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/scoreboard.ts)_
@@ -216,29 +240,29 @@ OPTIONS
   -h, --help  display command help
 
 EXAMPLES
-  $ mc start uhc.paper
-  $ mc start paper --realm=uhc
+  start smp
+  start copy
 ```
 
 _See code: [src/commands/start.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/start.ts)_
 
-## `mc status [SERVER]`
+## `mc status SERVER`
 
 see the status of a server instance
 
 ```
 USAGE
-  $ mc status [SERVER]
+  $ mc status SERVER
 
 ARGUMENTS
-  SERVER  Name of the server
+  SERVER  Name of the server (smp, cmp, copy)
 
 OPTIONS
   -h, --help  display command help
 
 EXAMPLES
-  $ mc status uhc
-  $ mc status --realm=uhc
+  status smp
+  status copy
 ```
 
 _See code: [src/commands/status.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/status.ts)_
@@ -258,8 +282,8 @@ OPTIONS
   -h, --help  display command help
 
 EXAMPLES
-  $!stop uhc
-  $!stop --realm=uhc
+  $stop smp
+  $stop copy
 ```
 
 _See code: [src/commands/stop.ts](https://github.com/ambitioncraft/ambitioncraft-cli/blob/v0.3.0/src/commands/stop.ts)_

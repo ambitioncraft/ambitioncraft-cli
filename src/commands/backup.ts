@@ -9,9 +9,9 @@ export default class BackupCommand extends InstanceCommandBase {
   static aliases = []
   static description = 'Backup individual regions'
   static examples = [
-    '!backup -o=1.1',
-    '!backup -o=0.1 -o=-1.1',
-    '!backup -o=0.1 -n=0.0',
+    'backup -o=1.1',
+    'backup -o=0.1 -o=-1.1',
+    'backup -o=0.1 -n=0.0',
   ]
 
   static strict = false

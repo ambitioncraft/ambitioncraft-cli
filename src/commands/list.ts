@@ -9,7 +9,7 @@ export default class ListCommand extends InstanceCommandBase {
   static description = 'list all players on a server'
 
   static examples = [
-    '!list cmp',
+    'list cmp',
   ]
 
   static args: Parser.args.IArg<any>[] = [...InstanceCommandBase.args]
@@ -30,10 +30,10 @@ export default class ListCommand extends InstanceCommandBase {
 
 export async function getOnlinePlayers(server: McServer) {
   const reply = await server.sendRconCommand('list')
-  const data = reply.split(' ')
+  const data = reply.trim().split(' ')
   return {
     onlineCount: data[2],
     maxCount: (data[6] === 'of') ? data[7] : data[6],
-    players: data.slice(9),
+    players: data.slice(8),
   }
 }

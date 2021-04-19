@@ -17,6 +17,7 @@
     "es2015"
   ],
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/config.json"
   ]
 }

@@ -12,9 +12,9 @@ export default class DownloadCommand extends InstanceCommandBase {
   static aliases = ['dl']
   static description = 'Download individual regions'
   static examples = [
-    '!download -o=1.1',
-    '!dl -n=0.1',
-    '!dl -e 0.0',
+    'download -o=1.1 -o=1.2',
+    'dl -n=0.1',
+    'dl -e 0.0',
   ]
 
   static strict = false
@@ -23,9 +23,9 @@ export default class DownloadCommand extends InstanceCommandBase {
   ]
 
   static flags: flags.Input<any> = {...InstanceCommandBase.flags,
-    overworld: flags.string({char: 'o', description: 'overworld region', multiple: false, exclusive:['end', 'nether']}),
-    nether: flags.string({char: 'n', description: 'nether region', multiple: false, exclusive:['overworld', 'end']}),
-    end: flags.string({char: 'e', description: 'end region', multiple: false, exclusive:['overworld', 'nether'] }),
+    overworld: flags.string({char: 'o', description: 'overworld region', multiple: true, exclusive:['end', 'nether']}),
+    nether: flags.string({char: 'n', description: 'nether region', multiple: true, exclusive:['overworld', 'end']}),
+    end: flags.string({char: 'e', description: 'end region', multiple: true, exclusive:['overworld', 'nether'] }),
   }
 
   // eslint-disable-next-line require-await
@@ -41,9 +41,9 @@ export default class DownloadCommand extends InstanceCommandBase {
     const {overworld, nether, end} =  this.flags
     const regions: string[] = []
 
-    parseRegion([overworld], Path.join(worldSource, 'region'))
-    parseRegion([nether], Path.join(worldSource, 'DIM-1', 'region'))
-    parseRegion([end], Path.join(worldSource, 'DIM1', 'region'))
+    parseRegion(overworld, Path.join(worldSource, 'region'))
+    parseRegion(nether, Path.join(worldSource, 'DIM-1', 'region'))
+    parseRegion(end, Path.join(worldSource, 'DIM1', 'region'))
     
     if (regions.length == 0) {
       this.error('Please specify region')
@@ -66,7 +66,7 @@ export default class DownloadCommand extends InstanceCommandBase {
     })
 
     if(this.context.source instanceof Discord.Message){
-      this.context.source.reply(attachments)
+      attachments.forEach(a => this.context.source.reply(a))
     }
   
     function parseRegion(values: string[] | undefined, regionDir: string) {
