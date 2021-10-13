@@ -82,7 +82,7 @@ export default class MirrorCommand extends InstanceCommandBase {
       await mirrorInstance.renameFiles(baseName, fileName, destFileName)
       this.success(`Renamed: ${fileName} to ${destFileName}`)
       await mirrorInstance.uploadFile(remotePath, contents)
-      this.success(`Uploaded: ${fileName}`)
+      this.success(`Uploaded: ${remotePath}`)
     }
 
     this.info(`Restarting ${mirrorInstance.name}, please wait...`);
