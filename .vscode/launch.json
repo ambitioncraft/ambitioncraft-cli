@@ -12,7 +12,27 @@
         "ts-node/register/transpile-only"
       ],
       "args": [
-        "src/cli-console.ts",
+        "src/cli/cli-console.ts",
+      ],
+      "cwd": "${workspaceRoot}",
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**",
+        "node_modules/**"
+      ]
+    },
+    {
+      "name": "Debug Discord",
+      "type": "pwa-node",
+      "request": "launch",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register/transpile-only"
+      ],
+      "args": [
+        "src/discord/discord-client",
       ],
       "cwd": "${workspaceRoot}",
       "console": "integratedTerminal",
@@ -26,11 +46,9 @@
       "request": "launch",
       "program": "${workspaceFolder}/bin/run",
       "args": [
-        "execute",
-        "speedrun",
-        "op",
-        "willowsticks",
-        "--realm=tnt"
+        "mirror",
+        "smp",
+        "-o=-6.-43"
       ],
       // "args": [
       //   "mkworld",

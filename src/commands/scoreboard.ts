@@ -1,18 +1,18 @@
 
 import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
-import {InstanceCommandBase} from '../command-base'
-import {RealmInfo, RealmStatus} from '../realm/realm-info'
+import {InstanceCommandBase} from '../core/command-base'
+import {McServer} from '../mc-server/mc-server'
 
 export default class ScoreboardCommand extends InstanceCommandBase {
   static allowWithAll = true
   static aliases = ['sb']
-  static description = 'displays the scoreboard associated to a specific objective'
+  static description = 'displays a scoreboard'
 
   static examples = [
-    '$ mc scoreboard uhc deaths',
-    '$ mc sb uhc deaths --whitelist',
-    '$ mc sb uhc deaths -w',
+    'scoreboard smp deaths',
+    'sb copy deaths --allplayers',
+    'sb uhc deaths -a',
   ]
 
   static args: Parser.args.IArg<any>[] = [
@@ -22,16 +22,14 @@ export default class ScoreboardCommand extends InstanceCommandBase {
 
   static flags: flags.Input<any> = {
     ...InstanceCommandBase.flags,
-    whitelist: flags.boolean({char: 'w', description: 'only show whitelisted players'}),
+    allplayers: flags.boolean({char: 'a', description: 'Include all players (not just whitelisted)'}),
   }
 
   async run() {
     const {objective} = this.args
-    const {whitelist} = this.flags
-    if (!this.instance.isActiveInstance) {
-      this.error(`${this.instanceName} is not active`)
-    }
-    const scores = await getScores(this.instance.realm, objective, whitelist)
+    const {allplayers} = this.flags
+    const whiteListOnly = !allplayers
+    const scores = await getScores(this.instance, objective, whiteListOnly)
 
     this.response
     .setTitle(`Scoreboard: ${objective}`)
@@ -41,7 +39,7 @@ export default class ScoreboardCommand extends InstanceCommandBase {
   }
 }
 
-export async function getScores(instance: RealmInfo, objective: string, whiteListOnly: boolean) {
+export async function getScores(instance: McServer, objective: string, whiteListOnly: boolean) {
   const players = await getPlayers(instance, whiteListOnly)
 
   // Get scores for each player
@@ -69,7 +67,7 @@ export async function getScores(instance: RealmInfo, objective: string, whiteLis
 
   return scores
 }
-export async function getPlayers(instance: RealmInfo, whiteListOnly: boolean) {
+export async function getPlayers(instance: McServer, whiteListOnly: boolean) {
   let resp: string
   if (whiteListOnly) {
     resp = await instance.sendRconCommand('whitelist list')

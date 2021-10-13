@@ -1,27 +1,22 @@
 
 import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
-import shell from 'shelljs'
-import {InstanceCommandBase} from '../command-base'
-import {RealmInfo, RealmStatus} from '../realm/realm-info'
+import {InstanceCommandBase} from '../core/command-base'
+import {McServer} from '../mc-server/mc-server'
 
 export default class ListCommand extends InstanceCommandBase {
   static allowWithAll = true
   static description = 'list all players on a server'
 
   static examples = [
-    '$ mc list uhc --realm=east',
-    '$ mc list east.uhc',
+    'list cmp',
   ]
 
   static args: Parser.args.IArg<any>[] = [...InstanceCommandBase.args]
   static flags: flags.Input<any> = {...InstanceCommandBase.flags}
 
   async run() {
-    if (!this.instance.isActiveInstance) {
-      this.error(`${this.instanceName} is not active`)
-    }
-    const online = await getOnlinePlayers(this.instance.realm)
+    const online = await getOnlinePlayers(this.instance)
     if (online.onlineCount === '0') {
       online.players = ['No online players']
     }
@@ -33,12 +28,12 @@ export default class ListCommand extends InstanceCommandBase {
   }
 }
 
-export async function getOnlinePlayers(realm: RealmInfo) {
-  const reply = await realm.sendRconCommand('list')
-  const data = reply.split(' ')
+export async function getOnlinePlayers(server: McServer) {
+  const reply = await server.sendRconCommand('list')
+  const data = reply.trim().split(' ')
   return {
     onlineCount: data[2],
     maxCount: (data[6] === 'of') ? data[7] : data[6],
-    players: data.slice(9),
+    players: data.slice(8),
   }
 }

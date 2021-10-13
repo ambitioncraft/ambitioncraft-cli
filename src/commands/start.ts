@@ -1,17 +1,18 @@
 import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import shell from 'shelljs'
-import {InstanceCommandBase} from '../command-base'
-import {RealmInfo, RealmStatus} from '../realm/realm-info'
+import {InstanceCommandBase} from '../core/command-base'
+import {McServer} from '../mc-server/mc-server'
 import retry from 'async-retry'
-import store from '../store'
+import store from '../core/store'
+
 export default class StartCommand extends InstanceCommandBase {
   static allowWithAll = false
   static description = 'start a server instance'
 
   static examples = [
-    '$ mc start uhc.paper',
-    '$ mc start paper --realm=uhc',
+    'start smp',
+    'start copy',
   ]
 
   static args: Parser.args.IArg<any>[] = [
@@ -30,7 +31,7 @@ export default class StartCommand extends InstanceCommandBase {
     this.info(`server: ${this.instanceName} is starting`)
     try {
       const isReady = await retry(async abort => {
-        const result = await this.instance.isReady()
+        const result = await this.instance.isRconReady()
         if (!result) throw new Error('not started yet...')
         return result
       }, {

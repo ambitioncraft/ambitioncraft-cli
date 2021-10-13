@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import readline from 'readline'
 import {ConsoleCommandClient} from './command-client'
-import {CliConfig} from './config'
+import {CliConfig} from '../config'
 
 let config: CliConfig
 try {

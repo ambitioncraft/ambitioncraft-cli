@@ -1,11 +1,6 @@
 import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
-import shell from 'shelljs'
-import fs, {write} from 'fs'
-import Path from 'path'
-import * as inquirer from 'inquirer'
-import {InstanceCommandBase} from '../command-base'
-
+import {InstanceCommandBase} from '../core/command-base'
 const invalidCommands = [
   'Incorrect argument for command',
   'Unknown or incomplete command',
@@ -20,8 +15,8 @@ export default class ExecuteCommand extends InstanceCommandBase {
   static aliases = ['run']
   static description = 'Execute a command using rcon'
   static examples = [
-    '$ mc execute uhc whitelist add ilmango',
-    '$ mc run give ilmango minecraft:stone_axe',
+    'execute cmp whitelist add ilmango',
+    'run copy give ilmango minecraft:stone_axe',
   ]
 
   static strict = false
@@ -33,13 +28,10 @@ export default class ExecuteCommand extends InstanceCommandBase {
   static flags: flags.Input<any> = {...InstanceCommandBase.flags}
 
   async run() {
-    if (!this.instance.isActiveInstance) {
-      this.error(`${this.instanceName} is not active`)
-    }
     const {mccommand} = this.args
-    const fullCommand = this.argv.slice(1).filter(x => !x.startsWith('--realm')).join(' ')
+    const fullCommand = this.argv.slice(1).join(' ')
 
-    let response = await this.instance.realm.sendRconCommand(fullCommand)
+    let response = await this.instance.sendRconCommand(fullCommand)
     response = response.trim()
     this.info(`command sent: ${fullCommand}`)
     let isError = false
