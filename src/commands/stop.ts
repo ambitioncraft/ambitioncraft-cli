@@ -24,7 +24,13 @@ export default class StartCommand extends InstanceCommandBase {
   // eslint-disable-next-line require-await
   async run() {
     this.warn(`instance: ${this.instanceName} stopping`)
-    await stopInstance(this.instance, false)
+    try {
+      await stopInstance(this.instance, true)
+    } catch (error) {
+      if (error instanceof Error) {
+        this.error(error.message)
+      }
+    }
     this.info('instance stopped.')
   }
 }

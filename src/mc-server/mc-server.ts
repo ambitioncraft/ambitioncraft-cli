@@ -118,7 +118,7 @@ async function fnStopServer(instance: McServer, forceKill: boolean) {
   forceKill ? await instance.forceKill() : await instance.stop()
   await retry(async _abort => {
     const result = (await instance.getState()).status === 'offline'
-    if (!result) throw new Error('not started yet...')
+    if (!result) throw new Error('not stopped yet...')
     return result
   }, {
     maxRetryTime: 20000,
