@@ -28,7 +28,7 @@ export default class StartCommand extends InstanceCommandBase {
       await stopInstance(this.instance, true)
     } catch (error) {
       if (error instanceof Error) {
-        this.error(error.message)
+        this.danger(error.message)
       }
     }
     this.info('instance stopped.')

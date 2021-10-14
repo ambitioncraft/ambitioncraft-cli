@@ -86,8 +86,8 @@ export default class MirrorCommand extends InstanceCommandBase {
     }
 
     this.info(`Restarting ${mirrorInstance.name}, please wait...`)
-    await startInstance(mirrorInstance)
-    this.info(`Server: ${mirrorInstance.name} started`)
+    await mirrorInstance.start()
+    this.info(`Server: ${mirrorInstance.name} starting`)
     this.success('All done :)')
   }
 

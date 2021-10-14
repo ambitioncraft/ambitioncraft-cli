@@ -70,11 +70,6 @@ export class PterodactylServer extends McServer {
     await saveFileContents(this.http, this.uuid, file, text)
   }
 
-  // async isRconReady() {
-  //   const status = await this.status()
-  //   return status === 'running'
-  // }
-
   async status(): Promise<ServerStatus> {
     const state = await getServerResourceUsage(this.http, this.uuid)
     return state.status

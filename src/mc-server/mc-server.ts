@@ -114,10 +114,21 @@ export const ServerStatus = strEnum([
 ])
 export type ServerStatus = keyof typeof ServerStatus
 
+export async function stopInstance(instance: McServer, forceKill: boolean) {
+  try {
+    await fnStopServer(instance, false)
+  } catch (error) {
+    if (forceKill) {
+      await fnStopServer(instance, true)
+    } else {
+      throw error
+    }
+  }
+}
 async function fnStopServer(instance: McServer, forceKill: boolean) {
   forceKill ? await instance.forceKill() : await instance.stop()
   await retry(async _abort => {
-    const result = (await instance.getState()).status === 'offline'
+    const result = (await instance.status()) === 'offline'
     if (!result) throw new Error('not stopped yet...')
     return result
   }, {
@@ -130,23 +141,10 @@ async function fnStopServer(instance: McServer, forceKill: boolean) {
   })
 }
 
-export async function stopInstance(instance: McServer, forceKill: boolean) {
-  try {
-    await fnStopServer(instance, false)
-  } catch (error) {
-    if (forceKill) {
-      await fnStopServer(instance, true)
-    } else {
-      throw error
-    }
-  }
-}
-
 export async function startInstance(instance: McServer) {
   await instance.start()
-
   const isReady = await retry(async abort => {
-    const result = (await instance.getState()).isRconReady
+    const result = (await instance.status()) === 'running'
     if (!result) throw new Error('not started yet...')
     return result
   }, {
