@@ -11,8 +11,7 @@
     "strict": true,
     "target": "es6",
     "allowJs": true,
-    "sourceMap": true,
-    "noImplicitAny": false
+    "sourceMap": true
   },
   "lib": [
     "es2015"

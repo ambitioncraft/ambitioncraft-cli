@@ -2,7 +2,7 @@ import Path from 'path'
 import {Rcon} from 'rcon-client'
 import store from '../core/store'
 
-import PanelUserClient, {AxiosInstance} from '../panel/user-client/client'
+import PanelUserClient from '../panel/user-client/client'
 import getServerResourceUsage from '../panel/user-client/server/getServerResourceUsage'
 import sendPowerState from '../panel/user-client/server/sendPowerState'
 import {MinecraftProperties} from '../utils/minecraft'
@@ -15,6 +15,7 @@ import {PterodactylConfig} from '../config'
 import {McServer, McServerSettings, ServerStatus} from './mc-server'
 import copyFile from '../panel/user-client/server/files/copyFile'
 import renameFiles from '../panel/user-client/server/files/renameFiles'
+import {AxiosInstance} from 'axios'
 
 export interface PterodactylMcServerSettings extends McServerSettings {
   uuid: string;

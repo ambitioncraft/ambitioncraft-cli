@@ -1,6 +1,7 @@
 import CommandResponse from './command-response'
 import {run} from '@oclif/command'
 import {Config, IConfig, load} from '@oclif/config'
+import {CLIError, ExitError} from '@oclif/errors'
 export type user = { name: string }
 
 export default class CommandContext {
@@ -16,13 +17,17 @@ export default class CommandContext {
       const runConfig = Object.assign(Object.create(Object.getPrototypeOf(cmdConfig)), cmdConfig, {run_context: this})
       await run(this.args, runConfig)
     } catch (error) {
-      if (error.oclif && error.oclif.exit === 0) {
+      if (error instanceof CLIError && error.oclif && error.oclif.exit === 0) {
+        console.log(error)
         // this was just a help command, ignore
-      } else {
+      } else if (error instanceof Error) {
         // actual error occured
         this.commandResponse.error(error.message)
         // eslint-disable-next-line no-console
         console.error(error.message)
+      } else {
+        this.commandResponse.error((error as Error).message)
+        console.error(error)
       }
     }
     await this.commandResponse.flush()

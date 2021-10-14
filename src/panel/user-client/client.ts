@@ -1,6 +1,6 @@
 
-import axios, {AxiosError, AxiosInstance} from 'axios'
-export {AxiosInstance}
+import axios, {AxiosInstance, AxiosError} from 'axios'
+
 export default class PanelUserClient {
   http: AxiosInstance
 
@@ -21,19 +21,12 @@ export default class PanelUserClient {
         Accept: 'Application/vnd.pterodactyl.v1+json',
       },
     })
-    try {
-      const response = await api.get('/api/client')
-      if (response.status === 404) {
-        throw new Error('API Key is not valid! (User)')
-      }
-      return new PanelUserClient(api)
-    } catch (error) {
-      if (error.response.status === 403) {
-        throw new Error('API Key is not valid! (User)')
-      } else {
-        throw error
-      }
+
+    const response = await api.get('/api/client')
+    if (response.status === 404) {
+      throw new Error('API Key is not valid! (User)')
     }
+    return new PanelUserClient(api)
   }
 }
 

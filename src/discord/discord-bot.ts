@@ -40,15 +40,15 @@ export class DiscordBot extends CommandClientBase {
     }
   }
 
-  onMessageReceived(message: Discord.Message) {
-    if (message.author.bot) {
+  onMessageReceived(message: Discord.Message | Discord.PartialMessage) {
+    if (message.author?.bot) {
       return
     }
     if (!this.channelsMap[message.channel.id]) {
       return
     }
     const prefix = this.config.discord.commandPrefix
-    if (!message.content.startsWith(prefix)) {
+    if (!message.content?.startsWith(prefix)) {
       return
     }
     const instance = this.channelsMap[message.channel.id]
