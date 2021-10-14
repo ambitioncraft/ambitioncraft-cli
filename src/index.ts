@@ -1,1 +1,1 @@
-import './discord-client'
+import './discord/discord-client'
