@@ -31,7 +31,7 @@
         "description": "manage instances"
       }
     },
-    "helpClass": "./lib/help",
+    "helpClass": "./lib/cli/help",
     "bin": "mc",
     "plugins": [
       "@oclif/plugin-help"

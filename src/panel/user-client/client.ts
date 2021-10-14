@@ -1,5 +1,5 @@
 
-import axios, {AxiosInstance} from 'axios'
+import axios, {AxiosError, AxiosInstance} from 'axios'
 export {AxiosInstance}
 export default class PanelUserClient {
   http: AxiosInstance
@@ -18,7 +18,7 @@ export default class PanelUserClient {
       headers: {
         Authorization: 'Bearer ' + key,
         'Content-Type': 'application/json',
-        // Accept: 'Application/vnd.pterodactyl.v1+json',
+        Accept: 'Application/vnd.pterodactyl.v1+json',
       },
     })
     try {

@@ -22,7 +22,7 @@ export default class StatusCommand extends InstanceCommandBase {
   static flags: flags.Input<any> = {
     ...InstanceCommandBase.flags,
   }
-  
+
   async run() {
     const state = await this.instance.getState()
     if (state.status === 'running' || state.status === 'starting') {

@@ -9,6 +9,7 @@ import {MinecraftProperties} from '../utils/minecraft'
 import * as utils from '../utils'
 import getFileContents from '../panel/user-client/server/files/getFileContents'
 import saveFileContents from '../panel/user-client/server/files/saveFileContents'
+import downloadFile from '../panel/user-client/server/files/downloadFile'
 import loadDirectory from '../panel/user-client/server/files/loadDirectory'
 import {PterodactylConfig} from '../config'
 import {McServer, McServerSettings, ServerStatus} from './mc-server'
@@ -52,7 +53,7 @@ export class PterodactylServer extends McServer {
       uuid: config.uuid,
       worldDir: config.worldDir,
       backupDir: config.backupDir,
-      mirrorServer: config.mirrorServer
+      mirrorServer: config.mirrorServer,
     })
   }
 
@@ -83,21 +84,29 @@ export class PterodactylServer extends McServer {
   }
 
   async stop() {
-    const resp = await sendPowerState(this.http, this.uuid, 'stop')
+    // await this.sendRconCommand('stop')
+    await sendPowerState(this.http, this.uuid, 'stop')
+  }
+
+  async forceKill() {
+    await sendPowerState(this.http, this.uuid, 'kill')
   }
 
   async getDirListing(path: string): Promise<string[]> {
     const files = await loadDirectory(this.http, this.uuid, path)
     return files.map(x => x.name)
   }
-  
 
-  async uploadFile(path: string, content: any): Promise<void>{
+  async downloadFile(path: string): Promise<Buffer> {
+    return await downloadFile(this.http, this.uuid, path)
+  }
+
+  async uploadFile(path: string, content: any): Promise<void> {
     await saveFileContents(this.http, this.uuid, path, content)
   }
 
-  async renameFiles(root: string, from: string, to: string) : Promise<void>{
-    await renameFiles(this.http, this.uuid,root, [{from, to}] )
+  async renameFiles(root: string, from: string, to: string): Promise<void> {
+    await renameFiles(this.http, this.uuid, root, [{from, to}])
   }
 }
 

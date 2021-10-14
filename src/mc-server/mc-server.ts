@@ -1,7 +1,7 @@
 import {Rcon} from 'rcon-client'
 import store from '../core/store'
 import {MinecraftProperties} from '../utils/minecraft'
-
+import retry from 'async-retry'
 export interface McServerSettings {
   name: string;
   host: string;
@@ -10,11 +10,10 @@ export interface McServerSettings {
   rconPass: string;
   worldDir: string | undefined;
   backupDir: string | undefined;
-  mirrorServer: string | undefined
+  mirrorServer: string | undefined;
 }
 
 export abstract class McServer {
- 
   name: string
   port: number
   rconPort: number
@@ -86,13 +85,15 @@ export abstract class McServer {
   abstract setMinecraftProperties(props: MinecraftProperties, instanceDir: string): Promise<void>
   abstract start(): Promise<void>
   abstract stop(): Promise<void>
-  abstract uploadFile(path:string, contents:any): Promise<void>
-  abstract renameFiles(root: string, from:string, to: string) : Promise<void>
+  abstract forceKill(): Promise<void>
+  abstract uploadFile(path: string, contents: any): Promise<void>
+  abstract downloadFile(path: string): Promise<Buffer>
+  abstract renameFiles(root: string, from: string, to: string): Promise<void>
   abstract status(): Promise<ServerStatus>
   abstract getDirListing(path: string): Promise<string[]>
 
-  async getMirrorInstance(){
-    if(this.mirrorServer){
+  async getMirrorInstance() {
+    if (this.mirrorServer) {
       return await store.getMcServer(this.mirrorServer)
     }
   }
@@ -112,3 +113,48 @@ export const ServerStatus = strEnum([
   'offline',
 ])
 export type ServerStatus = keyof typeof ServerStatus
+
+async function fnStopServer(instance: McServer, forceKill: boolean) {
+  forceKill ? await instance.forceKill() : await instance.stop()
+  await retry(async _abort => {
+    const result = (await instance.getState()).status === 'offline'
+    if (!result) throw new Error('not started yet...')
+    return result
+  }, {
+    maxRetryTime: 20000,
+    minTimeout: 2000,
+    maxTimeout: 5000,
+    onRetry: (_e, i) => {
+      console.log(`attempting to ${forceKill ? 'kill' : 'stop'}... attempt: ${i}`)
+    },
+  })
+}
+
+export async function stopInstance(instance: McServer, forceKill: boolean) {
+  try {
+    await fnStopServer(instance, false)
+  } catch (error) {
+    if (forceKill) {
+      await fnStopServer(instance, true)
+    } else {
+      throw error
+    }
+  }
+}
+
+export async function startInstance(instance: McServer) {
+  await instance.start()
+
+  const isReady = await retry(async abort => {
+    const result = (await instance.getState()).isRconReady
+    if (!result) throw new Error('not started yet...')
+    return result
+  }, {
+    maxRetryTime: 60000,
+    minTimeout: 2000,
+    maxTimeout: 5000,
+    onRetry: (e, i) => {
+      console.log(`attempting to connect... attempt: ${i}`)
+    },
+  })
+}

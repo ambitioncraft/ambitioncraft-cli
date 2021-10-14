@@ -8,12 +8,7 @@ try {
   throw new Error('config.json not found')
 }
 
-// const cli = new ConsoleCommandClient(config)
 const bot = new DiscordBot(config)
-
-// cli.start(() => {
-//   console.log('cli ready')
-// })
 
 bot.start(() => {
   console.log('bot is ready')

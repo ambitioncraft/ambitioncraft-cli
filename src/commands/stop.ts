@@ -2,6 +2,7 @@ import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import shell from 'shelljs'
 import {InstanceCommandBase} from '../core/command-base'
+import {stopInstance} from '../mc-server/mc-server'
 
 export default class StartCommand extends InstanceCommandBase {
   static allowWithAll = true
@@ -22,7 +23,8 @@ export default class StartCommand extends InstanceCommandBase {
 
   // eslint-disable-next-line require-await
   async run() {
-    await this.instance.stop()
     this.warn(`instance: ${this.instanceName} stopping`)
+    await stopInstance(this.instance, false)
+    this.info('instance stopped.')
   }
 }

@@ -1,4 +1,5 @@
 import fs from 'fs'
+import Path from 'path'
 
 export function parseServerProperties(text: string) {
   const props = {} as MinecraftProperties
@@ -13,6 +14,24 @@ export function parseServerProperties(text: string) {
     }
   })
   return props
+}
+
+export function getRegionPath(demension: 'overworld' | 'nether' | 'end', region: string) {
+  const validation = /^-?[\d]+\.-?[\d]+$/
+  region = region.trim()
+  if (!region.match(validation)) {
+    throw new Error(`invalid region ${region}`)
+  }
+  const file = `r.${region}.mca`
+  let regionDir = ''
+  if (demension === 'overworld') {
+    regionDir = Path.join('world', 'region')
+  } else if (demension === 'nether') {
+    regionDir = Path.join('world', 'DIM-1', 'region')
+  } else if (demension === 'end') {
+    regionDir = Path.join('world', 'DIM1', 'region')
+  }
+  return Path.join(regionDir, file)
 }
 
 export function flattenServerProperties(props: MinecraftProperties) {

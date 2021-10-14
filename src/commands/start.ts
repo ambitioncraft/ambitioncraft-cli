@@ -2,7 +2,7 @@ import {flags} from '@oclif/command'
 import * as Parser from '@oclif/parser'
 import shell from 'shelljs'
 import {InstanceCommandBase} from '../core/command-base'
-import {McServer} from '../mc-server/mc-server'
+import {McServer, startInstance} from '../mc-server/mc-server'
 import retry from 'async-retry'
 import store from '../core/store'
 
@@ -27,25 +27,10 @@ export default class StartCommand extends InstanceCommandBase {
   static maxTimout = 20000
   // eslint-disable-next-line require-await
   async run() {
-    await this.instance.start()
     this.info(`server: ${this.instanceName} is starting`)
     try {
-      const isReady = await retry(async abort => {
-        const result = await this.instance.isRconReady()
-        if (!result) throw new Error('not started yet...')
-        return result
-      }, {
-        maxRetryTime: 60000,
-        minTimeout: 2000,
-        maxTimeout: 5000,
-        onRetry: (e, i) => {
-          this.console(`attempting to connect... attempt: ${i}`)
-        },
-      })
-      if (isReady) {
-        this.success('server is online')
-        return
-      }
+      await startInstance(this.instance)
+      this.success('server is online')
     } catch {
       this.danger('timeout: server did not respond')
     }

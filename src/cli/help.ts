@@ -1,7 +1,7 @@
 import {Help, HelpOptions} from '@oclif/plugin-help'
 import * as Config from '@oclif/config'
 import stripAnsi from 'strip-ansi'
-import CommandContext from './core/command-context'
+import CommandContext from '../core/command-context'
 export default class CustomHelp extends Help {
   context: CommandContext | undefined
   constructor(config: Config.IConfig, opts?: Partial<HelpOptions> | undefined) {
