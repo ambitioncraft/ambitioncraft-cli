@@ -18,7 +18,6 @@ export default class CommandContext {
       await run(this.args, runConfig)
     } catch (error) {
       if (error instanceof CLIError && error.oclif && error.oclif.exit === 0) {
-        console.log(error)
         // this was just a help command, ignore
       } else if (error instanceof Error) {
         // actual error occured
