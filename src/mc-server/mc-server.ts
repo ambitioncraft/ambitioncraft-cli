@@ -143,7 +143,7 @@ async function fnStopServer(instance: McServer, forceKill: boolean) {
 
 export async function startInstance(instance: McServer) {
   await instance.start()
-  const isReady = await retry(async abort => {
+  await retry(async bail => {
     const result = (await instance.status()) === 'running'
     if (!result) throw new Error('not started yet...')
     return result
