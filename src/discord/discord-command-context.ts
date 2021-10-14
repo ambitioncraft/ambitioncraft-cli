@@ -7,7 +7,7 @@ import {throttle} from '../utils'
 
 let config: CliConfig
 try {
-  config = require('../config.json') as CliConfig
+  config = require('../../config.json') as CliConfig
 } catch {
   throw new Error('config.json not found')
 }

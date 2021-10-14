@@ -5,7 +5,7 @@ import {CliConfig} from '../config'
 
 let config: CliConfig
 try {
-  config = require('../config.json') as CliConfig
+  config = require('../../config.json') as CliConfig
 } catch {
   console.error('config.json not found')
   throw new Error('config.json not found')
